@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/start-localhost.mjs",
+    "dev": "npm run dev:main",
+    "dev:main": "PORT=3000 node scripts/start-localhost.mjs",
+    "dev:dev": "PORT=3001 node scripts/start-localhost.mjs",
     "dev:next": "next dev",
     "build": "next build",
     "start": "next start",

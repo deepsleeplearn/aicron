@@ -420,9 +420,11 @@ Plaza是左侧第一个一级导航。
 ## 10.2 本地启动边界
 
 - 当前项目只能本地启动，不允许暴露到 `10.156.132.38` 或任何局域网/公网网卡。
-- 启动 Next dev server 时必须显式绑定 `127.0.0.1`；日常启动命令固定为 `npm run dev`，该命令通过 `scripts/start-localhost.mjs` 创建本地-only server。
+- 当前目录 `/Users/gj/Documents/vsfile/aicron` 是 `main` 稳定展示工作区，固定用于本地 `3000` 端口；启动命令为 `npm run dev` 或 `npm run dev:main`。
+- `dev` 发展分支使用独立 worktree：`/Users/gj/Documents/vsfile/aicron/.worktrees/dev`，固定用于本地 `3001` 端口；启动命令为 `npm run dev:dev`。
+- 启动 Next dev server 时必须显式绑定 `127.0.0.1`；上述命令都通过 `scripts/start-localhost.mjs` 创建本地-only server。
 - `npm run dev:next` 仅保留为原始 Next CLI 备用命令，不用于日常启动，因为当前环境中 Next CLI 即使传 `--hostname` 也可能监听到 `*:3000`。
-- 启动后需要验证监听地址是 `127.0.0.1:3000` 或等价 localhost 地址，不能是 `*:3000`、`0.0.0.0:3000`、`[::]:3000` 或局域网 IP。
+- 启动后需要验证监听地址是 `127.0.0.1:3000`、`127.0.0.1:3001` 或等价 localhost 地址，不能是 `*:3000`、`*:3001`、`0.0.0.0:*`、`[::]:*` 或局域网 IP。
 
 ## 10.3 原型与候选方案
 

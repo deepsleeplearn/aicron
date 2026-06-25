@@ -1,0 +1,50 @@
+# AICron
+
+AI Information Cron.
+
+Local-first technical briefing workspace for OpenAI, Codex, Anthropic, Claude Platform, Claude Code, and service status updates.
+
+## Product Requirements
+
+Current product requirements and source rules are maintained in [`docs/PROJECT_REQUIREMENTS.md`](docs/PROJECT_REQUIREMENTS.md).
+
+When navigation, sources, fetching, presentation, scheduling, or article interaction behavior changes, update that document in the same change.
+
+## Run Locally
+
+```bash
+npm install
+npm run fetch
+npm run dev
+```
+
+Open the local URL printed by Next.js.
+
+## Optional Environment
+
+```bash
+BRIEF_FETCH_HOUR=7
+BRIEF_FETCH_MINUTE=0
+```
+
+Article discussion is handled by the local `codex` CLI through the server route in read-only mode. The browser never calls a model provider directly.
+
+## Scheduled Fetching
+
+For a long-running local scheduler:
+
+```bash
+npm run scheduler
+```
+
+For macOS `launchd`, call `npm run fetch` once per morning from this project directory.
+
+## Source Extension
+
+Default sources live in `src/lib/sources.ts`. Add new feeds by inserting a `Source` entry:
+
+- `rss`: RSS or Atom feeds.
+- `html-list`: web pages without RSS; configure `includePathPrefixes`.
+- `markdown-changelog`: raw Markdown changelog files.
+
+New source adapters should implement the same normalized `RawItem` shape and then use the existing fetch pipeline.

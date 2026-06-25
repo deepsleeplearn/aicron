@@ -1,0 +1,38 @@
+{
+  "name": "ai-morning-brief",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/start-localhost.mjs",
+    "dev:next": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "tsx --test tests/**/*.test.ts",
+    "fetch": "tsx scripts/fetch-now.ts",
+    "scheduler": "tsx scripts/scheduler.ts",
+    "notify:done": "node scripts/notify-codex-done.mjs",
+    "typecheck": "tsc --noEmit --incremental false"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "cheerio": "^1.0.0",
+    "katex": "^0.17.0",
+    "lucide-react": "^0.468.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "rss-parser": "^3.13.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.0"
+  }
+}

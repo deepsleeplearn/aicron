@@ -1,0 +1,9 @@
+# AInfoCron Agent Instructions
+
+- Before any project change, inspect the related surface across source config, adapters, fetcher dispatch, database queries, API routes, frontend navigation/filtering/rendering, scheduling, tests, and docs.
+- Identify whether each related area is a direct dependency, indirect dependency, reused pattern, or regression-protected behavior.
+- Make the smallest extensible adjustment that fits the existing architecture. Prefer existing `Source Adapter`, `RawItem`, fetch pipeline, API query, and UI state patterns before adding new abstractions.
+- Keep `docs/PROJECT_REQUIREMENTS.md` synchronized with changes to product behavior, navigation, sources, fetching, presentation, scheduling, or article interaction.
+- Do not break confirmed features listed in `docs/PROJECT_REQUIREMENTS.md`.
+- Local startup must stay local-only. Do not expose this project on `10.156.132.38` or any LAN/public interface; start it with `npm run dev`, which uses `scripts/start-localhost.mjs` and binds explicitly to `127.0.0.1`. After startup, verify the listener is localhost-only. Do not use `npm run dev:next` for normal local startup.
+- For this project only, after all requested work is complete and immediately before sending the final response, run `npm run notify:done` once. The command schedules a delayed local macOS announcement (`Codex任务完成`) so the final text can appear before the voice reminder. Skip only if the user explicitly asks not to notify or if the command is unavailable, and mention that in the final response.

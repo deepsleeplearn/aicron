@@ -89,6 +89,126 @@ function mathPublicationSource(input: {
 
 export const DEFAULT_SOURCES: Source[] = [
   {
+    id: "codex-radar",
+    name: "CodexRadar",
+    vendor: "CodexRadar",
+    category: "tools",
+    type: "codex-radar",
+    url: "https://codexradar.com/current.json",
+    enabled: true,
+    maxItems: 1
+  },
+  {
+    id: "karpathy-x-posts",
+    name: "Andrej Karpathy X Posts",
+    vendor: "Andrej Karpathy",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/karpathy",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "raschka-x-posts",
+    name: "Sebastian Raschka X Posts",
+    vendor: "Sebastian Raschka",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/rasbt",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "boris-cherny-x-posts",
+    name: "Boris Cherny X Posts",
+    vendor: "Boris Cherny",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/bcherny",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "alphaxiv-x-posts",
+    name: "alphaXiv X Posts",
+    vendor: "alphaXiv",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/askalphaxiv",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "anatoli-kopadze-x-posts",
+    name: "Anatoli Kopadze X Posts",
+    vendor: "Anatoli Kopadze",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/AnatoliKopadze",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "lilian-weng-x-posts",
+    name: "Lilian Weng X Posts",
+    vendor: "Lilian Weng",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/lilianweng",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "tibo-x-posts",
+    name: "Tibo X Posts",
+    vendor: "Tibo",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/thsottiaux",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "openai-x-posts",
+    name: "OpenAI X Posts",
+    vendor: "OpenAI",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/OpenAI",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "chatgpt-x-posts",
+    name: "ChatGPT X Posts",
+    vendor: "ChatGPT",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/ChatGPTapp",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "anthropic-x-posts",
+    name: "Anthropic X Posts",
+    vendor: "Anthropic",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/AnthropicAI",
+    enabled: true,
+    maxItems: 50
+  },
+  {
+    id: "claude-x-posts",
+    name: "Claude X Posts",
+    vendor: "Claude",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/claudeai",
+    enabled: true,
+    maxItems: 50
+  },
+  {
     id: "openai-research-index",
     name: "OpenAI Research Index",
     vendor: "OpenAI",

@@ -42,6 +42,19 @@ const RICH_HTML_UPGRADE_SOURCE_IDS = new Set([
   "mila-blog"
 ]);
 
+const COMPLETE_CONTENT_SOURCE_IDS = new Set([
+  "karpathy-x-posts",
+  "raschka-x-posts",
+  "boris-cherny-x-posts",
+  "alphaxiv-x-posts",
+  "anatoli-kopadze-x-posts",
+  "lilian-weng-x-posts",
+  "openai-x-posts",
+  "chatgpt-x-posts",
+  "anthropic-x-posts",
+  "claude-x-posts"
+]);
+
 export async function fetchArticleContent(url: string): Promise<string | null> {
   if (url.includes("#")) return null;
   const primary = await fetchContentSource({ url, type: "html" }).catch(() => null);
@@ -59,6 +72,7 @@ export function shouldRefreshArticleContent(input: {
   summary?: string | null;
 }): boolean {
   if (input.sourceId === "vector-publications") return false;
+  if (input.sourceId && COMPLETE_CONTENT_SOURCE_IDS.has(input.sourceId)) return false;
 
   const content = normalizeComparableText(richContentToText(input.content));
   if (content.length < 500) return true;
@@ -299,6 +313,7 @@ function sanitizeLink(element: cheerio.Cheerio<AnyNode>, baseUrl: string) {
   element.attr("href", href);
   element.attr("target", "_blank");
   element.attr("rel", "noreferrer");
+  element.attr("draggable", "false");
 }
 
 function sanitizeImage(element: cheerio.Cheerio<AnyNode>, baseUrl: string) {
@@ -310,6 +325,7 @@ function sanitizeImage(element: cheerio.Cheerio<AnyNode>, baseUrl: string) {
   element.attr("src", src);
   element.attr("loading", "lazy");
   element.attr("decoding", "async");
+  element.attr("draggable", "false");
 }
 
 function resolveReadableUrl(value: string | undefined, baseUrl: string): string | null {

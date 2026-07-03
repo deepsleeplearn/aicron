@@ -1,6 +1,6 @@
 # AICron 项目需求文档
 
-最后更新：2026-06-23
+最后更新：2026-07-01
 
 ## 1. 产品定位
 
@@ -61,6 +61,9 @@ Logo 设计原则：
     - Blog
     - Changelog
   - Claude Code
+- Tools
+  - CodexRadar
+  - Tools 必须固定渲染为左侧一级导航的最后一个入口；后续新增任何一级导航目录时，都只能插在 Tools 之前。
 - Github Hot
   - 不展示子导航。
   - 当前 GitHub Trending 项目，使用项目卡片展示。
@@ -105,8 +108,62 @@ Logo 设计原则：
       - SISC
       - SINUM
       - MDS
+- Experts&Bloggers
+  - Experts
+    - Andrej Karpathy
+    - Sebastian Raschka
+    - Boris Cherny
+    - Anatoli Kopadze
+    - Lilian Weng
+    - Tibo
+  - Core
+    - OpenAI
+    - ChatGPT
+    - Anthropic
+    - Claude
+  - Bloggers
+    - alphaXiv
+
+### Experts&Bloggers
+
+- Experts&Bloggers 是左侧一级导航，用于归档 AI 名人、研究者和技术博客作者在外部平台上的公开动态。
+- 当前人物/账号包含 Andrej Karpathy、Sebastian Raschka、Boris Cherny、alphaXiv、Anatoli Kopadze、Lilian Weng、Tibo、OpenAI、ChatGPT、Anthropic 和 Claude。
+- Experts&Bloggers 下按二级目录分为 Experts、Core 和 Bloggers；Andrej Karpathy、Sebastian Raschka、Boris Cherny、Anatoli Kopadze、Lilian Weng 和 Tibo 放在 Experts 三级目录下；OpenAI、ChatGPT、Anthropic 和 Claude 官方账号放在 Core 三级目录下；alphaXiv 放在 Bloggers 三级目录下。
+- 每个人物/账号三级导航下展示其 X/Twitter 公开时间线最近 50 条 posts，包含原创 post 和转发。
+- 人物/账号 X 源使用 `twitter-user-posts` adapter，通过本机已验证可用的 `twitter-cli` 只读命令拉取；项目默认给 `twitter-cli` 注入 `TWITTER_BROWSER=chrome` 和 `TWITTER_CHROME_PROFILE=Profile 1`，例如 `twitter user-posts @karpathy -n 50 --json`、`twitter user-posts @rasbt -n 50 --json`、`twitter user-posts @bcherny -n 50 --json`、`twitter user-posts @askalphaxiv -n 50 --json`、`twitter user-posts @AnatoliKopadze -n 50 --json`、`twitter user-posts @lilianweng -n 50 --json`、`twitter user-posts @thsottiaux -n 50 --json`、`twitter user-posts @OpenAI -n 50 --json`、`twitter user-posts @ChatGPTapp -n 50 --json`、`twitter user-posts @AnthropicAI -n 50 --json` 和 `twitter user-posts @claudeai -n 50 --json`；置顶 post 需要通过 `twitter-cli` 已登录环境的 `UserByScreenName` GraphQL 数据读取 `legacy.pinned_tweet_ids_str`，再用 `twitter tweet <tweet_id> --json` 获取结构化正文。
+- adapter 需要把 `twitter-cli` 返回的结构化 JSON 转换为现有 `RawItem`，写入 `items`、`item_content` 和 `fetch_runs`；每条 X post 的 `canonical_url` 使用 `https://x.com/<screen_name>/status/<tweet_id>`，正文中保留原文、转发/引用信息、可点击外链、图片/视频媒体和基础互动指标；`Pinned` 和 `Repost` 只能作为独立徽标/标签展示，不能拼到标题开头。
+- 点击 Experts&Bloggers 一级导航时，中间内容区使用 coverflow 聚合预览，展示全部人物/账号来源排序后的前 3 条动态。
+- 点击 Experts、Core 或 Bloggers 二级导航时，中间内容区使用 coverflow 聚合预览，只展示该分组下各三级人物/账号来源排序后的前 3 条动态。
+- 点击具体人物/账号三级导航时，使用普通 ListView 展示该人物最近 50 条动态，保留 X 原生时间线顺序；如果 X 暴露 pinned/置顶 post，ListView 必须把置顶 post 去重后放在第一条，不再按发布时间把它挪走，并用类似 `今日` 的行内徽标标出 `Pinned`；转发内容用 `Repost` 徽标标出；支持站内阅读、打开原文、收藏、标记已读和右侧 Codex 对话；ListView 顶部人名右侧需要显示 ` · x.com/<handle>` 的可点击个人主页链接；人名下方需要用矩阵式人物/机构卡片展示该人物/账号简介，左侧为带差异化 accent 背景的身份 rail 和 X 主页入口，右侧按摘要以及 `身份`、`方向`、`内容` 三列展示，不再额外展示底部常见 posts chip 行；详情页应直接展示 `twitter-cli` 已返回的完整 post 正文和媒体，不再按长文章全文抓取规则隐藏短 post。
+- Experts&Bloggers 来源复用现有 source、RawItem、fetch pipeline、manual refresh、早上 7:00 基准刷新、每 30 分钟自动刷新、新增标记、站内阅读和右侧 Codex 对话逻辑，不单独实现另一套定时任务。
+
+### Tools
+
+- Tools 是左侧一级导航，用于放置外部工具、监控面板和可结构化拉取的工具状态源。
+- 当前 Tools 下只有 CodexRadar 二级目录；点击 Tools 或 CodexRadar 后直接进入 CodexRadar 的 DetailView，不展示营销页或空父级预览。
+- CodexRadar DetailView 中间列顶部时间必须使用公开 JSON 中 `model_iq.quota_radar.updated_at` 对应的上海时间，保持与原站“降智雷达”标题旁更新时间一致；缺少该字段时才兜底到 `monitored_at`。
+- CodexRadar DetailView 不展示通用文章摘要块，从上到下展示：介绍、IQ评测方案、降智雷达、重置雷达研判；介绍区只保留简短说明文字，不展示额外指标卡、额度表或摘要表；降智雷达标题旁需要展示更新时间和“每天更新两次：上午约 7:00-8:00，下午约 13:00-14:00。”提示，主体应使用模型分数卡、90-110 常态区、最近多轮 IQ 曲线和居中指标表提高可读性；重置雷达研判来自官网公开 HTML 中的 `reset-judgement` 区块，放在 CodexRadar 内容最下面，并按原站的浅黄/浅蓝渐变容器、绿色/黄色判断卡、三列理由卡和来源链接胶囊展示；整体展示语义参考原站，但不直接复制原站前端代码、页面 chrome 或未授权 API 数据；正文文字必须支持鼠标选择、右键复制和浏览器翻译，不能因为 SVG 图表或富 HTML 回退到不可选择文本。
+- CodexRadar 来源复用现有 source、RawItem、fetch pipeline、manual refresh、早上 7:00 基准刷新、每 30 分钟自动刷新、新增标记、站内阅读和右侧 Codex 对话逻辑，不单独实现另一套定时任务。
 
 ## 4. 内容源规则
+
+### Experts&Bloggers / X 人物来源
+
+- Andrej Karpathy、Sebastian Raschka、Boris Cherny、Anatoli Kopadze、Lilian Weng 和 Tibo 来源放在 Experts&Bloggers / Experts / 对应人名下；OpenAI、ChatGPT、Anthropic 和 Claude 官方账号来源放在 Experts&Bloggers / Core / 对应账号名下；alphaXiv 来源放在 Experts&Bloggers / Bloggers / alphaXiv 下；人物/账号 X 来源不混入 Developers、Coder、Papers、Labs 或 Mathematics。
+- 数据来源是 X/Twitter 用户时间线，当前实现保留每个人物最近 50 条 posts。
+- 抓取必须使用本机已验证可用的 `twitter-cli` 只读路径，不使用不稳定的 X 搜索接口，也不通过页面 HTML 猜测内容。
+- `twitter-user-posts` adapter 需要把 `twitter-cli` JSON 中的原创、转发、引用、发布时间、链接、媒体和 metrics 转成普通 `RawItem`，并通过现有入库、摘要、排序和站内阅读流程展示；`urls` 字段和 post/quote 正文里的裸 URL 在 DetailView 中必须是可点击跳转链接；标题必须保持 post/文章原文标题，不添加 `Pinned:`、`Reposted:` 之类状态前缀。
+- `twitter-user-posts` 的人物 ListView 排序必须优先使用 `twitter-cli` 返回顺序；当账号存在 `pinned_tweet_ids_str` 时，需要额外抓取该置顶 tweet 的结构化内容，去重后固定为 `sourceOrder = 0`，其余 posts 继续沿用 `user-posts` 返回顺序；只有缺少返回顺序时才按发布时间倒序兜底。
+- `twitter-user-posts` 的结构化 CLI 内容是该来源的权威详情内容；刷新同一条 post 时应覆盖历史缓存，避免旧的 X 页面壳或更长但不准确的抓取内容继续占用 DetailView。
+- 如果 `twitter-cli` 因登录态、限流或网络问题失败，该源应在 `fetch_runs` 记录错误，不影响其他 source 的刷新。
+
+### Tools / CodexRadar
+
+- CodexRadar 来源放在 Tools / CodexRadar 下，不混入 Developers、Coder、Papers、Labs、Mathematics 或 Experts&Bloggers。
+- 数据来源主要使用公开 `https://codexradar.com/current.json`，并可补充读取官网公开 HTML 中的 `reset-judgement` 区块；站内展示必须保留原站要求的来源归属 `数据来自 Codex 雷达 codexradar.com`。
+- 当前只使用公开 JSON 中可用的 `model_iq.latest`、`model_iq.recent_days`、`model_iq.comparisons`、`model_iq.quota_radar`、链接信息，以及公开官网 HTML 中的重置雷达研判；需要完整社区体感明细或更细 API 时，必须满足原站授权和 attribution 要求后再接入。
+- `codex-radar` adapter 需要把公开 JSON 转换为单条 `RawItem`，写入 `items`、`item_content` 和 `fetch_runs`；刷新同一条工具状态时应覆盖历史正文缓存，避免旧监控快照继续占用 DetailView。
+- CodexRadar DetailView 必须显示可点击的原站链接，且正文中的 attribution 链接可跳转到 `https://codexradar.com/`。
 
 ### OpenAI
 
@@ -273,7 +330,7 @@ Plaza是左侧第一个一级导航。
 
 - 从各最底层内容栏目中各选最新一篇。
 - 排除 Github Hot。
-- 当前来源分组包括 OpenAI、Anthropic、Qwen / Blog、Qwen / Research、Kimi、MiniMax、ZhipuAI、HuggingFace / Daily Papers、HuggingFace / Trending Papers、OpenReview 各顶会源、Stanford AI Lab、BAIR、CMU ML、Mila、Vector Institute、Mathematics 各最底层期刊/会议/平台来源、Codex / Blog、Codex / Changelog、Claude Code。
+- 当前来源分组包括 OpenAI、Anthropic、Qwen / Blog、Qwen / Research、Kimi、MiniMax、ZhipuAI、HuggingFace / Daily Papers、HuggingFace / Trending Papers、OpenReview 各顶会源、Stanford AI Lab、BAIR、CMU ML、Mila、Vector Institute、Experts&Bloggers 各人物/账号、Mathematics 各最底层期刊/会议/平台来源、Codex / Blog、Codex / Changelog、Claude Code。
 - Plaza 暂不纳入 arXiv 各分类论文，避免 Plaza 首屏被 arXiv 高频论文源占满；arXiv 先只在 Papers / arXiv 下展示。
 - Mathematics 各最底层来源需要按 Plaza 既有规则纳入 Plaza：每个数学叶子来源各选最新一篇，与其他来源共同按时间倒序进入 coverflow。
 
@@ -293,6 +350,7 @@ Plaza是左侧第一个一级导航。
 - 卡片标题最多展示两行时，必须给标题行高和底部留出足够缓冲，避免粗体英文、论文标题或 3D 缩放状态下文字底部被裁切。
 - 普通文章列表和 Plaza 卡片标题下方的副文案不能重复展示同一个标题；前端应优先展示非重复的 `summary`，其次展示非重复的 `excerpt`，如果两者都与标题重复或为空，则直接隐藏副文案区域。
 - 日期为今天的文章或博客需要在 Plaza / 父级导航 coverflow 卡片和普通 ListView 列表项上显示 `今日` 胶囊标记；标记采用 meta 行内 A 方案，占用正常布局空间，不能绝对定位覆盖标题、来源、日期、摘要或操作按钮，也不能继承来源文本的截断样式导致徽标自身显示异常。
+- X post 的 `Pinned` 和 `Repost` 状态需要与 `今日` 类似，以 meta 行内胶囊徽标展示在普通 ListView、Plaza coverflow 卡片和 DetailView 顶部信息行中；状态徽标不得作为标题前缀写入标题文本。
 - Plaza交互最终选用 `C：惯性回弹` 方案。
 - 卡片区域支持触摸板左右滑动和按住左右拖动，滑动后保留轻微惯性并回弹贴近最近主卡。
 - 用户不手动滑动时，Plaza必须保持自动、匀速、缓慢向右滑动；自动速度需要偏慢，约 1 分钟完成一圈，避免浏览时产生压迫感。
@@ -309,6 +367,7 @@ Plaza是左侧第一个一级导航。
 - 富正文存储在现有 `item_content.content` 中，并使用内部格式标记；用于 Codex 对话、摘要判断和正文长度判断时必须转换回纯文本，不能把 HTML 标签直接喂给 Codex。
 - 已抽取并存储为富 HTML 的正文，只要达到正文最小展示长度，就应在站内阅读页展示；不能因为论文作者列表、来源信息等 metadata excerpt 比正文更长而误判为“未获取到完整正文”或反复触发详情页重抓。Vector Institute 是例外：它只展示列表页元信息，不展示或补抓外部论文页正文。
 - 站内阅读页中间文章内容区需要保证正文阅读宽度，但不能挤压右侧 Codex 对话框；桌面端应给右侧聊天保留足够横向空间。
+- 站内阅读页的标题、元信息、标签、摘要、正文和兜底提示文案必须保持浏览器原生文本可选择能力，支持鼠标拖拽选中、右键复制和浏览器选中文本翻译；列表卡片/Plaza 卡片的点击打开逻辑不能影响 DetailView 阅读文本选择。
 - 提供“打开原文”选项，跳转原始链接；该选项应放在拓宽后的文章内容区右上方。
 - 选中文章后，右侧出现 Codex 文章助手。
 - 右侧助手只展示聊天对话框和输入区，不展示文章标题、摘要、为什么重要、建议动作等静态信息。
@@ -352,7 +411,7 @@ Plaza是左侧第一个一级导航。
 - 本地嵌入式 scheduler 可通过 `BRIEF_DISABLE_EMBEDDED_SCHEDULER=1` 关闭。
 - 手动刷新、脚本刷新和定时刷新共用同一条 fetch pipeline。
 - 前端 Dashboard 默认每 60 秒静默同步一次当前视图；页面不可见或用户已打开文章详情时暂停同步，避免打断站内阅读和右侧 Codex 对话。
-- 新增 source 只要在 `sources` 中启用，就必须自动进入同一条刷新 pipeline；Hugging Face Papers 不单独实现另一套定时逻辑。
+- 新增 source 只要在 `sources` 中启用，就必须自动进入同一条刷新 pipeline；Hugging Face Papers、Experts&Bloggers 和 Tools/CodexRadar 不单独实现另一套定时逻辑。
 - source 级网络抓取默认受限并发执行，默认并发数：`BRIEF_SOURCE_FETCH_CONCURRENCY=4`。
 - 文章正文补全文默认受限并发执行，默认并发数：`BRIEF_CONTENT_FETCH_CONCURRENCY=4`。
 - 并发只用于网络抓取；SQLite 落库、过期项清理和 `fetch_runs` 记录必须串行执行，避免为了提速破坏去重、fetch_runs、新增标记逻辑，或触发 SQLite `database is locked`。
@@ -378,7 +437,9 @@ Plaza是左侧第一个一级导航。
 - 新增无 RSS 的 AI 公司页面时，应新增 adapter，不改前端核心模型。
 - 新增无 RSS 的论文/榜单页面时，应优先新增 source adapter，并复用 `RawItem`、`items`、`item_content`、`fetch_runs`。
 - 数学期刊、会议和平台来源应优先复用 `optimization-online`、`jmlr-papers`、`pmlr-proceedings`、`academic-toc` 这类 source adapter；只有目标页面结构无法由现有 adapter 稳定表达时才新增专用 adapter。
-- X 名人、YouTube 等作为后续阶段，接入前需要评估登录、限流、稳定性和合规成本；arXiv 已在 Papers 下通过官方 Atom API 接入。
+- X 名人/研究账号来源优先复用 `twitter-user-posts` adapter 和本机已验证的 `twitter-cli` 只读路径；新增人物或账号前需要确认登录态、限流、稳定性和合规成本。
+- 工具监控类来源可新增专用 adapter，但必须复用 `RawItem`、`items`、`item_content`、`fetch_runs`、manual refresh 和 scheduler；不得只做前端静态页面。
+- YouTube 等作为后续阶段，接入前需要评估登录、限流、稳定性和合规成本；arXiv 已在 Papers 下通过官方 Atom API 接入。
 
 ## 9. 排序、分页与过滤
 
@@ -457,6 +518,8 @@ Plaza是左侧第一个一级导航。
   - Developers下的T1、T2是可折叠二级导航。
   - Qwen 在T2下继续保留 Blog / Research 三级导航。
   - Coder 下 Codex 继续保留 Blog / Changelog，Claude Code 保持独立入口。
+  - Tools 下 CodexRadar 是二级导航，点击后直接打开该工具的 DetailView。
+  - Tools 必须作为左侧一级导航最后一个入口渲染，不能因为新增一级导航而被挤到中间。
 - 厂商筛选：
   - 点击 Anthropic、OpenAI、Qwen、Kimi、MiniMax、ZhipuAI 时，列表必须显示对应来源内容，不能回落到Plaza混合内容。
   - 厂商页请求必须带明确 view，不能被后端默认 plaza 逻辑覆盖。
@@ -483,6 +546,7 @@ Plaza是左侧第一个一级导航。
   - 早上 7:00 为基准。
   - 之后每 30 分钟拉取。
   - 新增内容标记逻辑不能被 UI 改动破坏。
+  - Tools/CodexRadar 必须与其他 enabled source 共用同一条定时刷新链路。
 
 最小回归检查：
 

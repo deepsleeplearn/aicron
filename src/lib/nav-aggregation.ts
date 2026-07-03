@@ -66,6 +66,32 @@ export const LAB_LEAF_GROUPS: AggregateLeafGroup[] = [
   { id: "vector-institute", label: "Vector Institute", sourceIds: ["vector-publications"] }
 ];
 
+export const EXPERT_LEAF_GROUPS: AggregateLeafGroup[] = [
+  { id: "andrej-karpathy", label: "Andrej Karpathy", sourceIds: ["karpathy-x-posts"] },
+  { id: "sebastian-raschka", label: "Sebastian Raschka", sourceIds: ["raschka-x-posts"] },
+  { id: "boris-cherny", label: "Boris Cherny", sourceIds: ["boris-cherny-x-posts"] },
+  { id: "anatoli-kopadze", label: "Anatoli Kopadze", sourceIds: ["anatoli-kopadze-x-posts"] },
+  { id: "lilian-weng", label: "Lilian Weng", sourceIds: ["lilian-weng-x-posts"] },
+  { id: "tibo", label: "Tibo", sourceIds: ["tibo-x-posts"] }
+];
+
+export const CORE_LEAF_GROUPS: AggregateLeafGroup[] = [
+  { id: "openai", label: "OpenAI", sourceIds: ["openai-x-posts"] },
+  { id: "chatgpt", label: "ChatGPT", sourceIds: ["chatgpt-x-posts"] },
+  { id: "anthropic", label: "Anthropic", sourceIds: ["anthropic-x-posts"] },
+  { id: "claude", label: "Claude", sourceIds: ["claude-x-posts"] }
+];
+
+export const BLOGGER_LEAF_GROUPS: AggregateLeafGroup[] = [
+  { id: "alphaxiv", label: "alphaXiv", sourceIds: ["alphaxiv-x-posts"] }
+];
+
+export const EXPERTS_BLOGGERS_LEAF_GROUPS: AggregateLeafGroup[] = [
+  ...EXPERT_LEAF_GROUPS,
+  ...CORE_LEAF_GROUPS,
+  ...BLOGGER_LEAF_GROUPS
+];
+
 export const MATHEMATICS_OPTIMIZATION_LEAF_GROUPS: AggregateLeafGroup[] = [
   { id: "optimization-online", label: "Optimization Online", sourceIds: ["optimization-online"] },
   { id: "mathprog-journal", label: "Mathematical Programming", sourceIds: ["mathprog-journal"] },
@@ -110,6 +136,10 @@ export const AGGREGATE_NAV_SCOPES: AggregateNavScope[] = [
   { id: "papers:arxiv", label: "arXiv", perLeaf: 3, leafGroups: ARXIV_PAPER_LEAF_GROUPS },
   { id: "papers:openreview", label: "OpenReview", perLeaf: 3, leafGroups: OPENREVIEW_PAPER_LEAF_GROUPS },
   { id: "labs", label: "Labs", perLeaf: 2, leafGroups: LAB_LEAF_GROUPS },
+  { id: "experts-bloggers", label: "Experts&Bloggers", perLeaf: 3, leafGroups: EXPERTS_BLOGGERS_LEAF_GROUPS },
+  { id: "experts-bloggers:experts", label: "Experts", perLeaf: 3, leafGroups: EXPERT_LEAF_GROUPS },
+  { id: "experts-bloggers:core", label: "Core", perLeaf: 3, leafGroups: CORE_LEAF_GROUPS },
+  { id: "experts-bloggers:bloggers", label: "Bloggers", perLeaf: 3, leafGroups: BLOGGER_LEAF_GROUPS },
   { id: "mathematics", label: "Mathematics", perLeaf: 2, leafGroups: MATHEMATICS_LEAF_GROUPS },
   {
     id: "mathematics:optimization",

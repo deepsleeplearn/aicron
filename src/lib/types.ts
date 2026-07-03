@@ -20,6 +20,8 @@ export type SourceType =
   | "pmlr-proceedings"
   | "academic-toc"
   | "vector-publications"
+  | "twitter-user-posts"
+  | "codex-radar"
   | "zhipu-model-family";
 
 export type SourceCategory =
@@ -27,6 +29,8 @@ export type SourceCategory =
   | "api"
   | "coding-agent"
   | "github-trending"
+  | "experts-bloggers"
+  | "tools"
   | "status"
   | "research"
   | "model";

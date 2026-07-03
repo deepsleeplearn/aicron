@@ -85,7 +85,15 @@ const PASSTHROUGH_CATEGORY_TAGS = new Set([
   "Scientific Computing",
   "Applied Math",
   "Numerical Analysis",
-  "Mathematics of Data Science"
+  "Mathematics of Data Science",
+  "X",
+  "Pinned",
+  "Original",
+  "Repost",
+  "Andrej Karpathy",
+  "Tool",
+  "CodexRadar",
+  "IQ Radar"
 ]);
 
 export function rankItem(input: {

@@ -11,11 +11,13 @@ import {
 import { ensureLocalSchedulerStarted } from "@/lib/local-scheduler";
 import { aggregateSourceIds, getAggregateNavScope, selectAggregatePreviewItems } from "@/lib/nav-aggregation";
 import { PLAZA_SOURCE_IDS, selectLatestPerPlazaGroup } from "@/lib/plaza";
+import { sortTwitterUserPostItems } from "@/lib/twitter-timeline-order";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const CODING_SOURCE_IDS = ["openai-codex-blog", "openai-codex-changelog", "claude-blog-posts"];
+const TOOLS_SOURCE_IDS = ["codex-radar"];
 const GITHUB_TRENDING_SOURCE_IDS = ["github-trending"];
 const OPENREVIEW_SOURCE_IDS = [
   "openreview-iclr-2026",
@@ -38,6 +40,19 @@ const PAPERS_SOURCE_IDS = [
   ...OPENREVIEW_SOURCE_IDS
 ];
 const LAB_SOURCE_IDS = ["stanford-ai-lab-blog", "bair-blog", "cmu-ml-blog", "mila-blog", "vector-publications"];
+const EXPERTS_BLOGGERS_SOURCE_IDS = [
+  "karpathy-x-posts",
+  "raschka-x-posts",
+  "boris-cherny-x-posts",
+  "alphaxiv-x-posts",
+  "anatoli-kopadze-x-posts",
+  "lilian-weng-x-posts",
+  "tibo-x-posts",
+  "openai-x-posts",
+  "chatgpt-x-posts",
+  "anthropic-x-posts",
+  "claude-x-posts"
+];
 const MATHEMATICS_SOURCE_IDS = [
   "optimization-online",
   "mathprog-journal",
@@ -125,17 +140,21 @@ export async function GET(request: NextRequest) {
   const sourceIds =
     view === "coding" && sources.length === 0
       ? CODING_SOURCE_IDS
-      : view === "papers" && sources.length === 0
-        ? PAPERS_SOURCE_IDS
-        : view === "labs" && sources.length === 0
-          ? LAB_SOURCE_IDS
-          : view === "mathematics" && sources.length === 0
-            ? MATHEMATICS_SOURCE_IDS
-            : view === "github-trending" && sources.length === 0
-              ? GITHUB_TRENDING_SOURCE_IDS
-              : vendor && sources.length === 0
-                ? (VENDOR_DEFAULT_SOURCE_IDS[vendor] ?? sources)
-                : sources;
+      : view === "tools" && sources.length === 0
+        ? TOOLS_SOURCE_IDS
+        : view === "papers" && sources.length === 0
+          ? PAPERS_SOURCE_IDS
+          : view === "labs" && sources.length === 0
+            ? LAB_SOURCE_IDS
+            : view === "experts-bloggers" && sources.length === 0
+              ? EXPERTS_BLOGGERS_SOURCE_IDS
+              : view === "mathematics" && sources.length === 0
+                ? MATHEMATICS_SOURCE_IDS
+                : view === "github-trending" && sources.length === 0
+                  ? GITHUB_TRENDING_SOURCE_IDS
+                  : vendor && sources.length === 0
+                    ? (VENDOR_DEFAULT_SOURCE_IDS[vendor] ?? sources)
+                    : sources;
   const listFn = sources.length > 0 ? listItems : listBriefItems;
   let allItems = listFn({
     q: searchParams.get("q") ?? undefined,
@@ -144,8 +163,12 @@ export async function GET(request: NextRequest) {
         ? "coding-agent"
         : view === "github-trending"
           ? "github-trending"
+          : view === "tools"
+            ? "tools"
           : view === "papers" || view === "labs" || view === "mathematics"
             ? "research"
+            : view === "experts-bloggers"
+              ? "experts-bloggers"
             : (searchParams.get("tag") ?? undefined),
     unreadOnly: searchParams.get("unread") === "1",
     vendor,
@@ -167,6 +190,8 @@ export async function GET(request: NextRequest) {
       allItems = selectHuggingFaceDailyItems(allItems);
     } else if (isHuggingFaceTrendingSource(sources)) {
       allItems = sortHuggingFaceTrendingItems(allItems);
+    } else if (sources.every((sourceId) => EXPERTS_BLOGGERS_SOURCE_IDS.includes(sourceId))) {
+      allItems = sortTwitterUserPostItems(allItems);
     } else {
       allItems = [...allItems].sort((a, b) => itemTimestamp(b) - itemTimestamp(a));
     }

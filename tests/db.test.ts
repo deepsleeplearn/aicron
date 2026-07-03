@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { computeItemHash } from "../src/lib/normalization";
+import { encodeRichHtmlContent } from "../src/lib/rich-content";
 import type { Source } from "../src/lib/types";
 
 test("upsert merges same source and URL even when title changes", async () => {
@@ -105,6 +106,53 @@ test("upsert keeps fuller article content when a later refresh only has an excer
   });
 
   assert.equal(getItem(id)?.content, fullContent);
+});
+
+test("upsert replaces cached X page content with authoritative twitter-cli post content", async () => {
+  const { getItem, upsertItem } = await import("../src/lib/db");
+  const source: Source = {
+    id: "karpathy-x-posts",
+    name: "Andrej Karpathy X Posts",
+    vendor: "Andrej Karpathy",
+    category: "experts-bloggers",
+    type: "twitter-user-posts",
+    url: "https://x.com/karpathy",
+    enabled: true
+  };
+  const canonicalUrl = "https://x.com/karpathy/status/2061907337154367865";
+  const id = computeItemHash({ sourceId: source.id, canonicalUrl, title: "A harness for every task" });
+  const staleXPageShell = encodeRichHtmlContent(`<article>${"X profile avatar navigation chrome. ".repeat(80)}</article>`);
+  const cliPostContent = encodeRichHtmlContent("<article><p>A harness for every task.</p><figure><img src=\"https://pbs.twimg.com/media/example.png\" alt=\"photo from @karpathy\" loading=\"lazy\" /></figure></article>");
+
+  upsertItem({
+    id,
+    source,
+    title: "A harness for every task",
+    canonicalUrl,
+    excerpt: "A harness for every task.",
+    content: staleXPageShell,
+    importance: 3,
+    tags: ["X"],
+    summary: "A harness for every task.",
+    whyItMatters: "Important",
+    action: "Read"
+  });
+
+  upsertItem({
+    id,
+    source,
+    title: "A harness for every task",
+    canonicalUrl,
+    excerpt: "A harness for every task.",
+    content: cliPostContent,
+    importance: 3,
+    tags: ["X"],
+    summary: "A harness for every task.",
+    whyItMatters: "Important",
+    action: "Read"
+  });
+
+  assert.equal(getItem(id)?.content, cliPostContent);
 });
 
 test("listItems orders by importance first, then submit time before publish time", async () => {

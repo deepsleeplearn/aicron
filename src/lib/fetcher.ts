@@ -1,6 +1,7 @@
 import { fetchBairBlogItems } from "./adapters/bair-blog";
 import { fetchArxivPaperItems } from "./adapters/arxiv-papers";
 import { fetchClaudeBlogItems } from "./adapters/claude-blog";
+import { fetchCodexRadarItems } from "./adapters/codex-radar";
 import { fetchCmuMlBlogItems } from "./adapters/cmu-ml-blog";
 import { fetchGithubTrendingItems } from "./adapters/github-trending";
 import { fetchHtmlListItems } from "./adapters/html-list";
@@ -22,6 +23,7 @@ import { fetchOpenReviewPaperItems } from "./adapters/openreview-papers";
 import { fetchQwenResearchItems } from "./adapters/qwen-research";
 import { fetchRssItems } from "./adapters/rss";
 import { fetchStanfordAiLabBlogItems } from "./adapters/stanford-ai-lab";
+import { fetchTwitterUserPostItems } from "./adapters/twitter-user-posts";
 import { fetchVectorPublicationItems } from "./adapters/vector-publications";
 import { fetchZhipuModelFamilyItems } from "./adapters/zhipu-model-family";
 import { mapWithConcurrency } from "./concurrency";
@@ -138,6 +140,8 @@ function shouldPruneMissingSourceItems(source: Source): boolean {
     source.type === "pmlr-proceedings" ||
     source.type === "academic-toc" ||
     source.type === "vector-publications" ||
+    source.type === "twitter-user-posts" ||
+    source.type === "codex-radar" ||
     source.id === "openai-research-index"
   );
 }
@@ -313,6 +317,23 @@ async function fetchRawItems(source: Source): Promise<RawItem[]> {
       sourceName: source.name,
       url: source.url,
       maxItems: source.maxItems
+    });
+    return filterRawItems(source, items);
+  }
+  if (source.type === "twitter-user-posts") {
+    items = await fetchTwitterUserPostItems({
+      sourceId: source.id,
+      sourceName: source.name,
+      url: source.url,
+      maxItems: source.maxItems
+    });
+    return filterRawItems(source, items);
+  }
+  if (source.type === "codex-radar") {
+    items = await fetchCodexRadarItems({
+      sourceId: source.id,
+      sourceName: source.name,
+      url: source.url
     });
     return filterRawItems(source, items);
   }

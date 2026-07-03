@@ -61,3 +61,65 @@ test("codex changelog entries can display short complete section content", () =>
     true
   );
 });
+
+test("expert X posts display their short complete post body", () => {
+  assert.equal(
+    hasDisplayableArticleContent({
+      sourceId: "karpathy-x-posts",
+      content: "This is a complete X post body with a linked image and metrics.",
+      summary: "This is a complete X post body with a linked image and metrics.",
+      excerpt: "This is a complete X post body with a linked image and metrics."
+    }),
+    true
+  );
+
+  assert.equal(
+    hasDisplayableArticleContent({
+      sourceId: "raschka-x-posts",
+      content: "A complete Sebastian Raschka X post with a link to a blog article.",
+      summary: "A complete Sebastian Raschka X post with a link to a blog article.",
+      excerpt: "A complete Sebastian Raschka X post with a link to a blog article."
+    }),
+    true
+  );
+
+  assert.equal(
+    hasDisplayableArticleContent({
+      sourceId: "boris-cherny-x-posts",
+      content: "A complete Boris Cherny X post about Claude Code and product engineering.",
+      summary: "A complete Boris Cherny X post about Claude Code and product engineering.",
+      excerpt: "A complete Boris Cherny X post about Claude Code and product engineering."
+    }),
+    true
+  );
+
+  assert.equal(
+    hasDisplayableArticleContent({
+      sourceId: "alphaxiv-x-posts",
+      content: "A complete alphaXiv X post summarizing a recent arXiv paper with a figure.",
+      summary: "A complete alphaXiv X post summarizing a recent arXiv paper with a figure.",
+      excerpt: "A complete alphaXiv X post summarizing a recent arXiv paper with a figure."
+    }),
+    true
+  );
+
+  assert.equal(
+    hasDisplayableArticleContent({
+      sourceId: "anatoli-kopadze-x-posts",
+      content: "A complete Anatoli Kopadze X post about Claude Code loops with a video.",
+      summary: "A complete Anatoli Kopadze X post about Claude Code loops with a video.",
+      excerpt: "A complete Anatoli Kopadze X post about Claude Code loops with a video."
+    }),
+    true
+  );
+
+  assert.equal(
+    hasDisplayableArticleContent({
+      sourceId: "lilian-weng-x-posts",
+      content: "A complete Lilian Weng X post about scaling laws and AI safety research.",
+      summary: "A complete Lilian Weng X post about scaling laws and AI safety research.",
+      excerpt: "A complete Lilian Weng X post about scaling laws and AI safety research."
+    }),
+    true
+  );
+});

@@ -55,6 +55,68 @@ test("vector publications do not refresh external article content", () => {
   );
 });
 
+test("expert X posts do not attempt detail-page article refresh", () => {
+  assert.equal(
+    shouldRefreshArticleContent({
+      sourceId: "karpathy-x-posts",
+      content: "Short but complete X post body.",
+      summary: "Short but complete X post body.",
+      excerpt: "Short but complete X post body."
+    }),
+    false
+  );
+
+  assert.equal(
+    shouldRefreshArticleContent({
+      sourceId: "raschka-x-posts",
+      content: "Short but complete X post body.",
+      summary: "Short but complete X post body.",
+      excerpt: "Short but complete X post body."
+    }),
+    false
+  );
+
+  assert.equal(
+    shouldRefreshArticleContent({
+      sourceId: "boris-cherny-x-posts",
+      content: "Short but complete X post body.",
+      summary: "Short but complete X post body.",
+      excerpt: "Short but complete X post body."
+    }),
+    false
+  );
+
+  assert.equal(
+    shouldRefreshArticleContent({
+      sourceId: "alphaxiv-x-posts",
+      content: "Short but complete X post body.",
+      summary: "Short but complete X post body.",
+      excerpt: "Short but complete X post body."
+    }),
+    false
+  );
+
+  assert.equal(
+    shouldRefreshArticleContent({
+      sourceId: "anatoli-kopadze-x-posts",
+      content: "Short but complete X post body.",
+      summary: "Short but complete X post body.",
+      excerpt: "Short but complete X post body."
+    }),
+    false
+  );
+
+  assert.equal(
+    shouldRefreshArticleContent({
+      sourceId: "lilian-weng-x-posts",
+      content: "Short but complete X post body.",
+      summary: "Short but complete X post body.",
+      excerpt: "Short but complete X post body."
+    }),
+    false
+  );
+});
+
 test("plain html articles can be upgraded to rich article content once", () => {
   assert.equal(
     shouldUpgradePlainArticleContent({

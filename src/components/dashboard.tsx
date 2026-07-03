@@ -8,9 +8,12 @@ import {
   ChevronRight,
   ExternalLink,
   RefreshCcw,
+  Rss,
   Search,
   Send,
+  Sparkles,
   Star,
+  Users,
   X
 } from "lucide-react";
 import type {
@@ -19,6 +22,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
+  ReactNode,
   WheelEvent as ReactWheelEvent
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -69,12 +73,31 @@ type OilPriceResponse = {
   error?: string;
 };
 
-type NavSectionId = "plaza" | "papers" | "mathematics" | "labs" | "vendors" | "coding" | "github";
+type NavSectionId = "plaza" | "papers" | "mathematics" | "labs" | "experts-bloggers" | "vendors" | "coding" | "github" | "tools";
 type VendorTierId = "first" | "second";
+type ExpertBloggerGroupId = "experts" | "core" | "bloggers";
 type MathematicsLeafBranch = { id: string; label: string; description: string };
 type MathematicsBranch = MathematicsLeafBranch & {
   aggregateScope?: string;
   children?: MathematicsLeafBranch[];
+};
+type ExpertBloggerProfile = {
+  summary: string;
+  facts: Array<{ label: string; value: string }>;
+  topics: string[];
+};
+type ExpertBloggerBranch = {
+  id: string;
+  label: string;
+  description: string;
+  profileUrl: string;
+  profile: ExpertBloggerProfile;
+};
+type ExpertBloggerGroup = {
+  id: ExpertBloggerGroupId;
+  label: string;
+  aggregateScope: string;
+  branchIds: string[];
 };
 type MathematicsGroup = {
   id: string;
@@ -91,8 +114,10 @@ const NAV_SECTIONS: Array<{ id: NavSectionId; label: string }> = [
   { id: "github", label: "Github Hot" },
   { id: "papers", label: "Papers" },
   { id: "labs", label: "Labs" },
-  { id: "mathematics", label: "Mathematics" }
+  { id: "mathematics", label: "Mathematics" },
+  { id: "experts-bloggers", label: "Experts&Bloggers" }
 ];
+const TOOLS_NAV_SECTION: { id: NavSectionId; label: string } = { id: "tools", label: "Tools" };
 
 const HUGGINGFACE_PAPER_BRANCHES = [
   { id: "huggingface-daily-papers", label: "Daily Papers", description: "huggingface.co/papers" },
@@ -121,6 +146,213 @@ const AI_LAB_BRANCHES = [
   { id: "cmu-ml-blog", label: "CMU ML", description: "blog.ml.cmu.edu" },
   { id: "mila-blog", label: "Mila", description: "mila.quebec/en/research/blog" },
   { id: "vector-publications", label: "Vector Institute", description: "vectorinstitute.ai/research-talent/publications" }
+];
+
+const EXPERT_BLOGGER_BRANCHES: ExpertBloggerBranch[] = [
+  {
+    id: "karpathy-x-posts",
+    label: "Andrej Karpathy",
+    description: "x.com/karpathy",
+    profileUrl: "https://x.com/karpathy",
+    profile: {
+      summary:
+        "AI 研究者和工程师，长期关注神经网络、LLM、AI 教育和人机协作工具；公开动态常把研究判断、产品体验和工程实践放在一起看。",
+      facts: [
+        { label: "履历", value: "曾任 OpenAI 研究科学家、Tesla AI 负责人，参与深度学习、自动驾驶和大模型相关工作。" },
+        { label: "现在", value: "当前公开身份是 Anthropic 成员，继续围绕 AI 系统、编码代理和模型交互做产品与研究观察。" },
+        { label: "研究/工作方向", value: "大模型、智能体、神经网络训练、自动驾驶、教育内容和软件工程中的 AI 工作流。" }
+      ],
+      topics: ["LLM", "Agents", "AI 教育", "Coding", "研究观察"]
+    }
+  },
+  {
+    id: "raschka-x-posts",
+    label: "Sebastian Raschka",
+    description: "x.com/rasbt",
+    profileUrl: "https://x.com/rasbt",
+    profile: {
+      summary:
+        "机器学习研究者、作者和教育者，擅长把模型、论文和工程实现拆成可复现的学习材料，尤其关注 LLM 与 PyTorch 生态。",
+      facts: [
+        { label: "履历", value: "出版过多本机器学习与深度学习书籍，包括面向实践的 Python、PyTorch 和 LLM 教材。" },
+        { label: "现在", value: "持续从事机器学习写作、研究和开源教育，围绕现代 LLM 与模型训练提供实践材料。" },
+        { label: "研究/工作方向", value: "LLM 架构、模型训练与微调、机器学习工程、评测、PyTorch 和教学型代码实现。" }
+      ],
+      topics: ["LLM", "PyTorch", "论文解读", "模型训练", "技术写作"]
+    }
+  },
+  {
+    id: "boris-cherny-x-posts",
+    label: "Boris Cherny",
+    description: "x.com/bcherny",
+    profileUrl: "https://x.com/bcherny",
+    profile: {
+      summary:
+        "软件工程师、技术作者和 Claude Code 团队成员，长期关注类型系统、开发者工具、AI 编程产品和工程组织方式。",
+      facts: [
+        { label: "履历", value: "曾在 Facebook 做软件工程，组织 San Francisco TypeScript Meetup，并出版 O'Reilly《Programming TypeScript》。" },
+        { label: "现在", value: "当前公开 X bio 为 Claude Code @anthropicai，围绕 Claude Code 和 Anthropic 开发者体验工作。" },
+        { label: "研究/工作方向", value: "AI 编程工具、Claude Code、TypeScript/JavaScript、开发者体验、产品工程和团队协作模式。" }
+      ],
+      topics: ["Claude Code", "AI Coding", "TypeScript", "开发者工具", "产品工程"]
+    }
+  },
+  {
+    id: "alphaxiv-x-posts",
+    label: "alphaXiv",
+    description: "x.com/askalphaxiv",
+    profileUrl: "https://x.com/askalphaxiv",
+    profile: {
+      summary:
+        "alphaXiv 是面向 arXiv 论文的发现、阅读和讨论平台；这个 X 账号主要把近期 AI/ML 论文整理成可快速判断价值的研究摘要。",
+      facts: [
+        { label: "身份", value: "alphaXiv 官方账号，不是个人研究者账号；X bio 当前为 High fidelity research。" },
+        { label: "现在", value: "运营 alphaxiv.org，围绕 arXiv 论文做趋势发现、论文页面、讨论和研究内容分发。" },
+        { label: "研究/工作方向", value: "AI/ML 论文发现、论文可读化、研究社区讨论、LLM/Agent/模型训练等前沿论文跟踪。" }
+      ],
+      topics: ["论文摘要", "LLM", "Agents", "模型训练", "arXiv"]
+    }
+  },
+  {
+    id: "anatoli-kopadze-x-posts",
+    label: "Anatoli Kopadze",
+    description: "x.com/AnatoliKopadze",
+    profileUrl: "https://x.com/AnatoliKopadze",
+    profile: {
+      summary:
+        "Anatoli Kopadze 是围绕 AI agents、Claude Code 和工程自动化工作流输出高频内容的技术作者型账号，常把视频片段、长文和实践观点串成可执行的 AI 工程方法。",
+      facts: [
+        { label: "身份", value: "X verified 创作者，当前公开 bio 为 Adapt or die，主页链接指向其 Telegram 频道。" },
+        { label: "现在", value: "持续发布 AI 编程、Claude Code、agent loops、提示工程和自动化开发工作流相关内容。" },
+        { label: "研究/工作方向", value: "AI agents、Claude Code、工程 loop、提示工程、vibe coding、开发者生产力和 AI 原生软件团队。" }
+      ],
+      topics: ["Claude Code", "Agents", "Loops", "Prompting", "AI 编程"]
+    }
+  },
+  {
+    id: "lilian-weng-x-posts",
+    label: "Lilian Weng",
+    description: "x.com/lilianweng",
+    profileUrl: "https://x.com/lilianweng",
+    profile: {
+      summary:
+        "Lilian Weng 是 AI 研究者、技术写作者和 Lil'Log 作者，长期把强化学习、LLM、Agent、AI safety 和工程实践整理成高质量研究笔记。",
+      facts: [
+        { label: "履历", value: "曾任 OpenAI VP，负责 AI Safety、robotics 和 applied research 相关工作。" },
+        { label: "现在", value: "当前公开 X bio 为 Thinking Machines Lab 联合创始人，同时持续维护个人技术博客 Lil'Log。" },
+        { label: "研究/工作方向", value: "大模型、强化学习、Agent、AI safety、机器人、scaling laws、人机交互和研究系统化写作。" }
+      ],
+      topics: ["LLM", "AI Safety", "Agents", "RL", "Lil'Log"]
+    }
+  },
+  {
+    id: "tibo-x-posts",
+    label: "Tibo",
+    description: "x.com/thsottiaux",
+    profileUrl: "https://x.com/thsottiaux",
+    profile: {
+      summary:
+        "Tibo 是 @thsottiaux 背后的 AI 技术观察和实践型账号；当前公开资料读取受 X 登录态限制，本站先以保守描述接入其公开时间线，方便跟踪 AI 工具、agent 和软件构建相关动态。",
+      facts: [
+        { label: "身份", value: "X/Twitter 技术账号，当前以 Tibo 名义发布公开内容，handle 为 @thsottiaux。" },
+        { label: "现在", value: "持续在 X 上发布和转发 AI、开发者工具、agent 工作流与软件构建相关内容。" },
+        { label: "研究/工作方向", value: "AI 工具、智能体、vibe coding、开发者工作流、产品原型和工程实践观察。" }
+      ],
+      topics: ["AI 工具", "Agents", "Vibe Coding", "开发者工作流", "产品观察"]
+    }
+  },
+  {
+    id: "openai-x-posts",
+    label: "OpenAI",
+    description: "x.com/OpenAI",
+    profileUrl: "https://x.com/OpenAI",
+    profile: {
+      summary:
+        "OpenAI 官方 X 账号，发布公司级模型、产品、研究、安全、平台和招聘动态，是 OpenAI 公开信息的核心入口之一。",
+      facts: [
+        { label: "身份", value: "OpenAI 官方账号；使命是确保通用人工智能造福全人类。" },
+        { label: "现在", value: "持续发布 OpenAI 模型、产品、研究、安全和平台更新，连接 openai.com 与招聘入口。" },
+        { label: "研究/工作方向", value: "AGI、基础模型、ChatGPT、API、AI safety、研究发布、产品发布和开发者平台。" }
+      ],
+      topics: ["模型发布", "ChatGPT", "API", "Safety", "Research"]
+    }
+  },
+  {
+    id: "chatgpt-x-posts",
+    label: "ChatGPT",
+    description: "x.com/ChatGPTapp",
+    profileUrl: "https://x.com/ChatGPTapp",
+    profile: {
+      summary:
+        "ChatGPT 官方产品账号，聚焦 ChatGPT 面向用户的功能、使用场景、App 更新和产品活动，适合跟踪产品体验层变化。",
+      facts: [
+        { label: "身份", value: "ChatGPT 官方账号，公开 bio 为 ChatGPT is for the people。" },
+        { label: "现在", value: "围绕 chat.com、ChatGPT App 和面向个人/团队用户的产品能力发布动态。" },
+        { label: "研究/工作方向", value: "ChatGPT 功能、产品体验、多模态交互、应用场景、用户教育和发布活动。" }
+      ],
+      topics: ["产品更新", "App", "使用场景", "多模态", "发布活动"]
+    }
+  },
+  {
+    id: "anthropic-x-posts",
+    label: "Anthropic",
+    description: "x.com/AnthropicAI",
+    profileUrl: "https://x.com/AnthropicAI",
+    profile: {
+      summary:
+        "Anthropic 官方 X 账号，发布 Claude、AI safety、研究、政策、产品和企业合作动态，是 Anthropic 公开信息核心来源。",
+      facts: [
+        { label: "身份", value: "Anthropic 官方账号，定位为构建可靠、可解释、可控 AI 系统的 AI safety and research company。" },
+        { label: "现在", value: "持续发布 Claude 系列、Anthropic 研究、安全实践、产品和公司动态。" },
+        { label: "研究/工作方向", value: "AI safety、可靠性、可解释性、steerability、Claude 模型、企业产品和前沿研究。" }
+      ],
+      topics: ["Claude", "AI Safety", "Research", "Enterprise", "Policy"]
+    }
+  },
+  {
+    id: "claude-x-posts",
+    label: "Claude",
+    description: "x.com/claudeai",
+    profileUrl: "https://x.com/claudeai",
+    profile: {
+      summary:
+        "Claude 官方产品账号，聚焦 Claude assistant 的产品更新、App 能力、使用方式和 Anthropic 生态入口，适合跟踪 Claude 体验变化。",
+      facts: [
+        { label: "身份", value: "Claude 官方账号；Claude 是 Anthropic 构建的安全、准确、可靠 AI assistant。" },
+        { label: "现在", value: "围绕 claude.ai、Claude App、产品功能、使用教程和生态更新发布动态。" },
+        { label: "研究/工作方向", value: "AI assistant、Claude App、产品体验、协作工作流、可靠回答、安全交互和用户教育。" }
+      ],
+      topics: ["Claude App", "产品更新", "AI Assistant", "工作流", "使用教程"]
+    }
+  },
+];
+
+const EXPERT_BLOGGER_GROUPS: ExpertBloggerGroup[] = [
+  {
+    id: "experts",
+    label: "Experts",
+    aggregateScope: "experts-bloggers:experts",
+    branchIds: [
+      "karpathy-x-posts",
+      "raschka-x-posts",
+      "boris-cherny-x-posts",
+      "anatoli-kopadze-x-posts",
+      "lilian-weng-x-posts",
+      "tibo-x-posts"
+    ]
+  },
+  {
+    id: "core",
+    label: "Core",
+    aggregateScope: "experts-bloggers:core",
+    branchIds: ["openai-x-posts", "chatgpt-x-posts", "anthropic-x-posts", "claude-x-posts"]
+  },
+  {
+    id: "bloggers",
+    label: "Bloggers",
+    aggregateScope: "experts-bloggers:bloggers",
+    branchIds: ["alphaxiv-x-posts"]
+  }
 ];
 
 const MATHEMATICS_GROUPS: MathematicsGroup[] = [
@@ -210,6 +442,8 @@ const CODEX_BRANCHES = [
 ];
 
 const CODING_SOURCES = [{ id: "claude-blog-posts", label: "Claude Code" }];
+
+const TOOLS_BRANCHES = [{ id: "codex-radar", label: "CodexRadar", description: "codexradar.com" }];
 
 const QWEN_BRANCHES = [
   { id: "qwen-blog-rss", label: "Blog", description: "旧版 QwenLM Blog" },
@@ -307,11 +541,18 @@ export function Dashboard() {
   const [arxivExpanded, setArxivExpanded] = useState(false);
   const [openReviewExpanded, setOpenReviewExpanded] = useState(false);
   const [codingSource, setCodingSource] = useState("all");
+  const [toolSource, setToolSource] = useState("codex-radar");
   const [paperSource, setPaperSource] = useState("huggingface-daily-papers");
   const [mathSource, setMathSource] = useState("optimization-online");
   const [mathExpandedGroup, setMathExpandedGroup] = useState<string | null>(null);
   const [mathExpandedSubgroup, setMathExpandedSubgroup] = useState<string | null>(null);
   const [labSource, setLabSource] = useState("stanford-ai-lab-blog");
+  const [expertSource, setExpertSource] = useState("karpathy-x-posts");
+  const [expertGroupExpanded, setExpertGroupExpanded] = useState<Record<ExpertBloggerGroupId, boolean>>({
+    experts: false,
+    core: false,
+    bloggers: false
+  });
   const [aggregateScopeId, setAggregateScopeId] = useState<string | null>(null);
   const [vendorTierExpanded, setVendorTierExpanded] = useState<Record<VendorTierId, boolean>>({
     first: false,
@@ -322,9 +563,11 @@ export function Dashboard() {
     papers: false,
     mathematics: false,
     labs: false,
+    "experts-bloggers": false,
     vendors: false,
     coding: false,
-    github: false
+    github: false,
+    tools: false
   });
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [cornerActionsOpen, setCornerActionsOpen] = useState(false);
@@ -461,6 +704,10 @@ export function Dashboard() {
         params.set("view", "labs");
         if (labSource !== "all") params.append("source", labSource);
       }
+      if (!aggregateScopeId && section === "experts-bloggers") {
+        params.set("view", "experts-bloggers");
+        if (expertSource !== "all") params.append("source", expertSource);
+      }
       if (!aggregateScopeId && section === "github") params.set("view", "github-trending");
       if (!aggregateScopeId && section === "vendors") {
         params.set("view", "vendors");
@@ -471,6 +718,10 @@ export function Dashboard() {
       if (!aggregateScopeId && section === "coding") {
         params.set("view", "coding");
         if (codingSource !== "all") params.append("source", codingSource);
+      }
+      if (!aggregateScopeId && section === "tools") {
+        params.set("view", "tools");
+        if (toolSource !== "all") params.append("source", toolSource);
       }
       if (unreadOnly) params.set("unread", "1");
       params.set("page", String(page));
@@ -548,7 +799,20 @@ export function Dashboard() {
     const timer = window.setTimeout(() => void loadItems(), 220);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, section, vendorFilter, vendorSource, codingSource, paperSource, mathSource, labSource, aggregateScopeId, unreadOnly]);
+  }, [
+    page,
+    section,
+    vendorFilter,
+    vendorSource,
+    codingSource,
+    toolSource,
+    paperSource,
+    mathSource,
+    labSource,
+    expertSource,
+    aggregateScopeId,
+    unreadOnly
+  ]);
 
   useEffect(() => {
     const sync = () => {
@@ -569,7 +833,20 @@ export function Dashboard() {
       document.removeEventListener("visibilitychange", sync);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, section, vendorFilter, vendorSource, codingSource, paperSource, mathSource, labSource, aggregateScopeId, unreadOnly]);
+  }, [
+    page,
+    section,
+    vendorFilter,
+    vendorSource,
+    codingSource,
+    toolSource,
+    paperSource,
+    mathSource,
+    labSource,
+    expertSource,
+    aggregateScopeId,
+    unreadOnly
+  ]);
 
   useEffect(() => {
     setPlazaOffset(0);
@@ -627,11 +904,19 @@ export function Dashboard() {
     return () => cancelAnimationFrame(frame);
   }, [data.items.length, isCoverflowMode]);
 
+  useEffect(() => {
+    if (section !== "tools" || toolSource !== "codex-radar" || selectedItem || loading) return;
+    const item = data.items.find((candidate) => candidate.sourceId === "codex-radar");
+    if (item) selectToolDetailItem(item);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section, toolSource, data.items, selectedItem, loading]);
+
   async function selectItem(item: StoredItem) {
     selectedIdRef.current = item.id;
     setSelectedId(item.id);
     setSelectedItem(item);
     setMessages([]);
+    setCodexBusy(false);
     setDetailLoadingId(item.id);
     try {
       const [detailResponse, historyResponse] = await Promise.all([
@@ -655,6 +940,10 @@ export function Dashboard() {
     } finally {
       setDetailLoadingId((current) => (current === item.id ? null : current));
     }
+  }
+
+  function selectToolDetailItem(item: StoredItem) {
+    void selectItem(item);
   }
 
   function handleCardTextOpen(
@@ -725,6 +1014,7 @@ export function Dashboard() {
 
   async function askCodex(question: string, displayText = question) {
     if (!selectedItem || !question.trim()) return;
+    const requestItemId = selectedItem.id;
     const command = parseAssistantCommand(question);
     setCodexBusy(true);
     setError(null);
@@ -739,7 +1029,7 @@ export function Dashboard() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          itemId: selectedItem.id,
+          itemId: requestItemId,
           prompt: command.prompt,
           history: messages,
           webSearch: command.webSearch
@@ -747,14 +1037,16 @@ export function Dashboard() {
       });
       const payload = (await response.json()) as { output?: string; error?: string };
       const reply = payload.output ?? payload.error ?? "Codex 调用失败。";
+      if (selectedIdRef.current !== requestItemId) return;
       setMessages([...nextMessages, { role: "assistant", content: reply }]);
       if (!response.ok) setError(reply);
     } catch (reason) {
       const reply = reason instanceof Error ? reason.message : "Codex 调用失败。";
+      if (selectedIdRef.current !== requestItemId) return;
       setMessages([...nextMessages, { role: "assistant", content: reply }]);
       setError(reply);
     } finally {
-      setCodexBusy(false);
+      if (selectedIdRef.current === requestItemId) setCodexBusy(false);
     }
   }
 
@@ -767,12 +1059,15 @@ export function Dashboard() {
     });
     setVendorSource(null);
     setCodingSource("all");
+    setToolSource("codex-radar");
     setPaperSource("huggingface-daily-papers");
     setMathSource("optimization-online");
     setMathExpandedGroup(null);
     setMathExpandedSubgroup(null);
     setLabSource("stanford-ai-lab-blog");
-    setAggregateScopeId(nextHasChildren ? nextSection : null);
+    setExpertSource("karpathy-x-posts");
+    setExpertGroupExpanded({ experts: false, core: false, bloggers: false });
+    setAggregateScopeId(nextHasChildren && nextSection !== "tools" ? nextSection : null);
     setVendorTierExpanded({ first: false, second: false });
     setQwenExpanded(false);
     setCodexExpanded(false);
@@ -791,6 +1086,7 @@ export function Dashboard() {
     setSelectedId(null);
     setSelectedItem(null);
     setMessages([]);
+    setCodexBusy(false);
     setAssistantInput("");
     setDetailLoadingId(null);
   }
@@ -980,6 +1276,15 @@ export function Dashboard() {
         description: "Codex Blog、Codex Changelog 和 Claude Code 相关的重要内容。"
       };
     }
+    if (section === "tools") {
+      const toolBranch = TOOLS_BRANCHES.find((item) => item.id === toolSource);
+      return {
+        title: toolBranch?.label ?? "Tools",
+        description: toolBranch
+          ? `直接查看 ${toolBranch.description} 的工具监控详情。`
+          : "工具和外部监控面板。"
+      };
+    }
     if (section === "papers") {
       const paperBranch = HUGGINGFACE_PAPER_BRANCHES.find((item) => item.id === paperSource);
       if (paperBranch) {
@@ -1038,6 +1343,35 @@ export function Dashboard() {
         description: "高校 AI 实验室发布的研究博客和技术文章。"
       };
     }
+    if (section === "experts-bloggers") {
+      const expertGroup = EXPERT_BLOGGER_GROUPS.find((group) => group.aggregateScope === aggregateScopeId);
+      if (expertGroup) {
+        return {
+          title: expertGroup.label,
+          description: expertBloggerGroupDescription(expertGroup.id)
+        };
+      }
+      if (aggregateScopeId === "experts-bloggers") {
+        return {
+          title: "Experts&Bloggers",
+          description: "AI 名人、研究者和技术博客作者在外部平台上的公开动态聚合预览。"
+        };
+      }
+      const expertBranch = EXPERT_BLOGGER_BRANCHES.find((item) => item.id === expertSource);
+      if (expertBranch) {
+        return {
+          title: expertBranch.label,
+          description: `只看 ${expertBranch.description} 中最近 50 条公开动态，包含原创 post 和转发。`,
+          profileUrl: expertBranch.profileUrl,
+          profileLabel: expertBranch.description,
+          expertProfile: expertBranch.profile
+        };
+      }
+      return {
+        title: "Experts&Bloggers",
+        description: "AI 名人和技术博客作者在外部平台上的公开动态。"
+      };
+    }
     if (section === "github") {
       return {
         title: "Github Hot",
@@ -1048,12 +1382,33 @@ export function Dashboard() {
       title: "Plaza",
       description: "各个最底层栏目里最新的一篇文章或博客，排除 Github Hot，适合先快速滑动浏览。"
     };
-  }, [section, vendorFilter, vendorSource, codingSource, paperSource, mathSource, labSource]);
+  }, [
+    section,
+    vendorFilter,
+    vendorSource,
+    codingSource,
+    toolSource,
+    paperSource,
+    mathSource,
+    labSource,
+    expertSource,
+    aggregateScopeId
+  ]);
+  const feedHeaderProfileLink =
+    "profileUrl" in headerCopy && headerCopy.profileUrl
+      ? { href: headerCopy.profileUrl, label: headerCopy.profileLabel }
+      : null;
+  const feedHeaderExpertProfile =
+    "expertProfile" in headerCopy && headerCopy.expertProfile ? headerCopy.expertProfile : null;
+  const feedHeaderExpertProfileMatrix = feedHeaderExpertProfile
+    ? expertProfileMatrix(feedHeaderExpertProfile)
+    : [];
   const selectedParagraphs = selectedItem ? articleParagraphs(selectedItem) : [];
   const selectedRichHtml =
     selectedItem && hasDisplayableArticleContent(selectedItem)
       ? decodeRichHtmlContent(selectedItem.content)
       : null;
+  const selectedSummary = selectedItem?.sourceId === "codex-radar" ? null : (selectedItem?.summary ?? null);
   const maxGithubToday = useMemo(() => {
     return Math.max(1, ...data.items.map((item) => githubTodayCount(item)));
   }, [data.items]);
@@ -1222,7 +1577,7 @@ export function Dashboard() {
       <div className={selectedItem ? "pageShell hasReader" : "pageShell"}>
         <aside className="leftRail">
           <section className="railBlock navRail">
-            {NAV_SECTIONS.map((navItem) => {
+            {[...NAV_SECTIONS, TOOLS_NAV_SECTION].map((navItem) => {
               const expanded = expandedSections[navItem.id];
               const hasChildren = navSectionHasChildren(navItem.id);
               return (
@@ -1661,6 +2016,75 @@ export function Dashboard() {
                       ))}
                     </div>
                   ) : null}
+                  {expanded && navItem.id === "experts-bloggers" ? (
+                    <div className="railSubTree">
+                      {EXPERT_BLOGGER_GROUPS.map((group) => {
+                        const branches = group.branchIds
+                          .map((branchId) => EXPERT_BLOGGER_BRANCHES.find((branch) => branch.id === branchId))
+                          .filter((branch): branch is ExpertBloggerBranch => Boolean(branch));
+                        const groupActive =
+                          section === "experts-bloggers" &&
+                          (aggregateScopeId === group.aggregateScope ||
+                            (!aggregateScopeId && group.branchIds.includes(expertSource)));
+                        return (
+                          <div className="railVendorNode" key={group.id}>
+                            <button
+                              className={
+                                groupActive
+                                  ? "railSubItem railSubWithChevron active"
+                                  : "railSubItem railSubWithChevron"
+                              }
+                              onClick={() => {
+                                setSection("experts-bloggers");
+                                setVendorSource(null);
+                                setCodingSource("all");
+                                setExpertSource(group.branchIds[0] ?? "karpathy-x-posts");
+                                setAggregateScopeId(group.aggregateScope);
+                                setExpertGroupExpanded((current) => ({
+                                  ...current,
+                                  [group.id]: !current[group.id]
+                                }));
+                                setPage(1);
+                                clearSelection();
+                              }}
+                            >
+                              <span>{group.label}</span>
+                              {expertGroupExpanded[group.id] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            </button>
+                            {expertGroupExpanded[group.id] ? (
+                              <div className="railNestedTree">
+                                {branches.map((branch) => (
+                                  <button
+                                    key={branch.id}
+                                    className={
+                                      section === "experts-bloggers" &&
+                                      !aggregateScopeId &&
+                                      expertSource === branch.id
+                                        ? "railSubItem railNestedItem active"
+                                        : "railSubItem railNestedItem"
+                                    }
+                                    title={branch.description}
+                                    onClick={() => {
+                                      setSection("experts-bloggers");
+                                      setVendorSource(null);
+                                      setCodingSource("all");
+                                      setExpertSource(branch.id);
+                                      setAggregateScopeId(null);
+                                      setExpertGroupExpanded((current) => ({ ...current, [group.id]: true }));
+                                      setPage(1);
+                                      clearSelection();
+                                    }}
+                                  >
+                                    {branch.label}
+                                  </button>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
                   {expanded && navItem.id === "coding" ? (
                     <div className="railSubTree">
                       <div className="railVendorNode">
@@ -1730,6 +2154,32 @@ export function Dashboard() {
                       ))}
                     </div>
                   ) : null}
+                  {expanded && navItem.id === "tools" ? (
+                    <div className="railSubTree">
+                      {TOOLS_BRANCHES.map((branch) => (
+                        <button
+                          key={branch.id}
+                          className={
+                            section === "tools" && toolSource === branch.id
+                              ? "railSubItem railNestedItem active"
+                              : "railSubItem railNestedItem"
+                          }
+                          title={branch.description}
+                          onClick={() => {
+                            setSection("tools");
+                            setVendorSource(null);
+                            setCodingSource("all");
+                            setToolSource(branch.id);
+                            setAggregateScopeId(null);
+                            setPage(1);
+                            clearSelection();
+                          }}
+                        >
+                          {branch.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               );
             })}
@@ -1754,12 +2204,13 @@ export function Dashboard() {
               </div>
               <div className="articleMeta">
                 {selectedItem.isNewSinceBrief ? <span className="newBadge">新增</span> : null}
+                <XPostBadges item={selectedItem} />
                 <span>{selectedItem.vendor}</span>
                 <span>{selectedItem.sourceName}</span>
                 <span>{itemDateLabel(selectedItem)}</span>
               </div>
-              <h1>
-                <InlineMarkdown content={selectedItem.title} />
+              <h1 className="articleTitle">
+                {normalizeInlineMarkdownText(selectedItem.title)}
               </h1>
               <div className="tagRow articleTags">
                 <span className={`importance i${selectedItem.importance}`}>优先级 {selectedItem.importance}</span>
@@ -1767,27 +2218,27 @@ export function Dashboard() {
                   <span key={tag}>{tag}</span>
                 ))}
               </div>
-              {selectedItem.summary ? (
+              {selectedSummary ? (
                 <section className="articleSummary">
                   <strong>摘要</strong>
-                  <MarkdownBlock content={selectedItem.summary} />
+                  <MarkdownBlock content={selectedSummary} />
                 </section>
               ) : null}
               {detailLoadingId === selectedItem.id ? (
-                <section className="articleNotice">
+                <section className="articleNotice articleTextSelectable">
                   <strong>正在抓取正文</strong>
                   <p>正在从原文地址拉取可站内阅读的正文内容。</p>
                 </section>
               ) : selectedRichHtml ? (
                 <RichArticleHtml html={selectedRichHtml} />
               ) : selectedParagraphs.length > 0 ? (
-                <section className="articleBody">
+                <section className="articleBody articleTextSelectable">
                   {selectedParagraphs.map((paragraph, index) => (
                     <MarkdownBlock key={`${selectedItem.id}-${index}`} content={paragraph} />
                   ))}
                 </section>
               ) : (
-                <section className="articleNotice">
+                <section className="articleNotice articleTextSelectable">
                   <strong>未获取到完整正文</strong>
                   <p>
                     这个源没有在 RSS 中提供全文，本站抓取原文时也没有拿到可展示正文。上方只保留摘要用于快速判断，
@@ -1801,8 +2252,52 @@ export function Dashboard() {
               {!isCoverflowMode ? (
                 <div className="feedHeader">
                   <div>
-                    <h1>{headerCopy.title}</h1>
+                    <h1>
+                      {headerCopy.title}
+                      {feedHeaderProfileLink ? (
+                        <a className="feedHeaderProfileLink" href={feedHeaderProfileLink.href} target="_blank" rel="noreferrer">
+                          {" · "}
+                          {feedHeaderProfileLink.label}
+                        </a>
+                      ) : null}
+                    </h1>
                     <p>{headerCopy.description}</p>
+                    {feedHeaderExpertProfile ? (
+                      <section
+                        className="expertProfilePanel"
+                        style={{ "--expert-profile-accent": expertProfileAccent(headerCopy.title) } as CSSProperties}
+                        aria-label={`${headerCopy.title} 简介`}
+                      >
+                        <aside className="expertProfileRail">
+                          <div className="expertProfileAvatar" aria-hidden="true">
+                            {expertProfileInitials(headerCopy.title)}
+                          </div>
+                          <strong>{headerCopy.title}</strong>
+                          {feedHeaderProfileLink ? (
+                            <a href={feedHeaderProfileLink.href} target="_blank" rel="noreferrer">
+                              {feedHeaderProfileLink.label}
+                              <ExternalLink size={13} aria-hidden="true" />
+                            </a>
+                          ) : null}
+                        </aside>
+                        <div className="expertProfileBody">
+                          <p className="expertProfileSummary">{feedHeaderExpertProfile.summary}</p>
+                          <div className="expertProfileMatrix">
+                            {feedHeaderExpertProfileMatrix.map((item) => (
+                              <section key={item.label}>
+                                <h2>
+                                  {item.label === "身份" ? <Users size={15} aria-hidden="true" /> : null}
+                                  {item.label === "方向" ? <Sparkles size={15} aria-hidden="true" /> : null}
+                                  {item.label === "内容" ? <Rss size={15} aria-hidden="true" /> : null}
+                                  {item.label}
+                                </h2>
+                                <p>{item.value}</p>
+                              </section>
+                            ))}
+                          </div>
+                        </div>
+                      </section>
+                    ) : null}
                   </div>
                   <span>{loading ? "加载中" : `${data.pagination.total} 条`}</span>
                 </div>
@@ -1912,6 +2407,7 @@ export function Dashboard() {
                         <div className="plazaCoverTop">
                           <span>{item.vendor}</span>
                           {item.isNewSinceBrief ? <span className="newBadge">新增</span> : null}
+                          <XPostBadges item={item} />
                           {isTodayItem(item) ? <TodayBadge /> : null}
                           <span>{item.sourceName}</span>
                         </div>
@@ -1971,6 +2467,7 @@ export function Dashboard() {
                     >
                       <div className="feedMeta">
                         {item.isNewSinceBrief ? <span className="newBadge">新增</span> : null}
+                        <XPostBadges item={item} />
                         <span>{item.vendor}</span>
                         <span>{item.sourceName}</span>
                         <span>{itemDateLabel(item)}</span>
@@ -2171,7 +2668,57 @@ export function Dashboard() {
 }
 
 function navSectionHasChildren(section: NavSectionId): boolean {
-  return section === "papers" || section === "mathematics" || section === "labs" || section === "vendors" || section === "coding";
+  return (
+    section === "papers" ||
+    section === "mathematics" ||
+    section === "labs" ||
+    section === "experts-bloggers" ||
+    section === "vendors" ||
+    section === "coding" ||
+    section === "tools"
+  );
+}
+
+function expertProfileInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function expertProfileAccent(name: string): string {
+  const accents = ["#1f7a6b", "#6654d9", "#b45a2a", "#2c6fb0", "#7b693f", "#17804b"];
+  const hash = Array.from(name).reduce((total, char) => total + char.charCodeAt(0), 0);
+  return accents[hash % accents.length];
+}
+
+function expertProfileMatrix(profile: ExpertBloggerProfile): Array<{ label: string; value: string }> {
+  const current = profile.facts.find((fact) => fact.label === "现在")?.value;
+  const identity =
+    current ??
+    profile.facts.find((fact) => fact.label === "身份")?.value ??
+    profile.facts.find((fact) => fact.label === "履历")?.value ??
+    profile.facts[0]?.value ??
+    profile.summary;
+  const direction =
+    profile.facts.find((fact) => fact.label.includes("方向"))?.value ??
+    profile.facts[2]?.value ??
+    profile.summary;
+  const content = profile.topics.join(" · ");
+
+  return [
+    { label: "身份", value: identity },
+    { label: "方向", value: direction },
+    { label: "内容", value: content }
+  ];
+}
+
+function expertBloggerGroupDescription(groupId: ExpertBloggerGroupId): string {
+  if (groupId === "experts") return "AI 研究者、工程师和技术专家在 X/Twitter 上的公开动态聚合预览。";
+  if (groupId === "core") return "AI 核心公司和产品官方账号在 X/Twitter 上的公开动态聚合预览。";
+  return "技术博客和研究内容分发账号在 X/Twitter 上的公开动态聚合预览。";
 }
 
 function githubDescription(item: StoredItem): string {
@@ -2193,6 +2740,18 @@ function plazaSourceLabel(item: StoredItem): string {
   if (item.sourceId === "cmu-ml-blog") return "CMU ML";
   if (item.sourceId === "mila-blog") return "Mila";
   if (item.sourceId === "vector-publications") return "Vector Institute";
+  if (item.sourceId === "karpathy-x-posts") return "Andrej Karpathy / X";
+  if (item.sourceId === "raschka-x-posts") return "Sebastian Raschka / X";
+  if (item.sourceId === "boris-cherny-x-posts") return "Boris Cherny / X";
+  if (item.sourceId === "alphaxiv-x-posts") return "alphaXiv / X";
+  if (item.sourceId === "anatoli-kopadze-x-posts") return "Anatoli Kopadze / X";
+  if (item.sourceId === "lilian-weng-x-posts") return "Lilian Weng / X";
+  if (item.sourceId === "tibo-x-posts") return "Tibo / X";
+  if (item.sourceId === "openai-x-posts") return "OpenAI / X";
+  if (item.sourceId === "chatgpt-x-posts") return "ChatGPT / X";
+  if (item.sourceId === "anthropic-x-posts") return "Anthropic / X";
+  if (item.sourceId === "claude-x-posts") return "Claude / X";
+  if (item.sourceId === "codex-radar") return "Tools / CodexRadar";
   if (item.sourceId === "claude-blog-posts") return "Claude Code";
   return item.vendor;
 }
@@ -2214,6 +2773,27 @@ function TodayBadge() {
   );
 }
 
+function XPostBadges(input: { item: StoredItem }) {
+  const isPinned = input.item.tags.includes("Pinned");
+  const isRepost = input.item.tags.includes("Repost");
+  if (!isPinned && !isRepost) return null;
+
+  return (
+    <>
+      {isPinned ? (
+        <span className="xPostBadge pinned" title="X 置顶 post" aria-label="X 置顶 post">
+          Pinned
+        </span>
+      ) : null}
+      {isRepost ? (
+        <span className="xPostBadge repost" title="X repost" aria-label="X repost">
+          Repost
+        </span>
+      ) : null}
+    </>
+  );
+}
+
 function plazaToneClass(item: StoredItem): string {
   const tones: Record<string, string> = {
     OpenAI: "toneOpenAI",
@@ -2227,6 +2807,14 @@ function plazaToneClass(item: StoredItem): string {
     "CMU ML": "toneOpenReview",
     Mila: "toneOpenReview",
     "Vector Institute": "toneOpenReview",
+    "Andrej Karpathy": "toneOpenAI",
+    "Sebastian Raschka": "toneOpenReview",
+    "Boris Cherny": "toneAnthropic",
+    alphaXiv: "toneOpenReview",
+    "Anatoli Kopadze": "toneAnthropic",
+    "Lilian Weng": "toneOpenAI",
+    Tibo: "toneOpenReview",
+    CodexRadar: "toneOpenAI",
     MiniMax: "toneMiniMax",
     ZhipuAI: "toneZhipuAI"
   };
@@ -2480,7 +3068,179 @@ function articleParagraphs(item: StoredItem): string[] {
 }
 
 function RichArticleHtml({ html }: { html: string }) {
-  return <section className="articleBody richArticleBody" dangerouslySetInnerHTML={{ __html: renderMathInRichHtml(html) }} />;
+  const preparedHtml = useMemo(() => prepareRichArticleHtml(html), [html]);
+  const [selectableHtml, setSelectableHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectableHtml(null);
+    if (shouldUseNativeRichHtml(preparedHtml)) return;
+    const frame = window.requestAnimationFrame(() => setSelectableHtml(preparedHtml));
+    return () => window.cancelAnimationFrame(frame);
+  }, [preparedHtml]);
+
+  if (shouldUseNativeRichHtml(preparedHtml) || selectableHtml !== preparedHtml) {
+    return (
+      <section
+        className="articleBody richArticleBody articleTextSelectable"
+        dangerouslySetInnerHTML={{ __html: preparedHtml }}
+      />
+    );
+  }
+
+  return (
+    <section className="articleBody richArticleBody articleTextSelectable">
+      {renderSelectableRichHtml(preparedHtml)}
+    </section>
+  );
+}
+
+function prepareRichArticleHtml(html: string): string {
+  return addReaderDragGuards(renderMathInRichHtml(html));
+}
+
+function addReaderDragGuards(html: string): string {
+  return html.replace(/<([a-z][a-z0-9:-]*)\b([^>]*)>/gi, (match, tagName: string, attributes: string) => {
+    if (/\sdraggable\s*=/.test(attributes)) return match;
+    return `<${tagName} draggable="false"${attributes}>`;
+  });
+}
+
+function shouldUseNativeRichHtml(html: string): boolean {
+  return /\bkatex\b/i.test(html);
+}
+
+function renderSelectableRichHtml(html: string): ReactNode {
+  if (typeof DOMParser === "undefined") {
+    return <div className="richParagraph">{stripHtmlForFallback(html)}</div>;
+  }
+
+  const parsed = new DOMParser().parseFromString(html, "text/html");
+  const root = parsed.body.querySelector("article") ?? parsed.body;
+  const children = renderRichChildren(root, "rich-root");
+  return children.length > 0 ? children : <div className="richParagraph">{root.textContent?.trim() ?? ""}</div>;
+}
+
+const TABLE_WHITESPACE_PARENT_TAGS = new Set(["table", "thead", "tbody", "tfoot", "tr", "colgroup"]);
+
+function renderRichChildren(element: ParentNode, keyPrefix: string): ReactNode[] {
+  const parentTagName = element.nodeType === 1 ? (element as Element).tagName.toLowerCase() : "";
+  const shouldDropWhitespaceText = TABLE_WHITESPACE_PARENT_TAGS.has(parentTagName);
+
+  return Array.from(element.childNodes)
+    .map((child, index) => {
+      if (shouldDropWhitespaceText && child.nodeType === 3 && !(child.textContent ?? "").trim()) return null;
+      return renderRichNode(child, `${keyPrefix}-${index}`);
+    })
+    .filter((child): child is ReactNode => child !== null && child !== undefined && child !== "");
+}
+
+function renderRichNode(node: ChildNode, key: string): ReactNode {
+  if (node.nodeType === 3) return node.textContent ?? "";
+  if (node.nodeType !== 1) return null;
+
+  const element = node as Element;
+  const tagName = element.tagName.toLowerCase();
+  if (tagName === "script" || tagName === "style" || tagName === "iframe" || tagName === "form") return null;
+
+  const className = element.getAttribute("class")?.trim() || undefined;
+  const style = styleAttributeToProperties(element.getAttribute("style"));
+  const elementProps = { className, style };
+
+  if (tagName === "svg") {
+    return (
+      <div
+        key={key}
+        className={joinClassNames("richEmbeddedSvg", className)}
+        style={style}
+        dangerouslySetInnerHTML={{ __html: element.outerHTML }}
+      />
+    );
+  }
+
+  const children = renderRichChildren(element, key);
+
+  if (tagName === "br") return <br key={key} />;
+  if (tagName === "img") {
+    const src = element.getAttribute("src")?.trim();
+    if (!src) return null;
+    return (
+      <img
+        key={key}
+        {...elementProps}
+        src={src}
+        alt={element.getAttribute("alt") ?? ""}
+        loading="lazy"
+        draggable={false}
+      />
+    );
+  }
+  if (tagName === "video") {
+    const src = element.getAttribute("src")?.trim();
+    if (!src) return null;
+    return <video key={key} {...elementProps} src={src} controls draggable={false} />;
+  }
+  if (tagName === "a") {
+    const href = element.getAttribute("href")?.trim();
+    if (!href) return children.length > 0 ? <span key={key}>{children}</span> : null;
+    return (
+      <a key={key} {...elementProps} href={href} target="_blank" rel="noreferrer" draggable={false}>
+        {children.length > 0 ? children : href}
+      </a>
+    );
+  }
+
+  if (tagName === "h1") return <h1 key={key} {...elementProps}>{children}</h1>;
+  if (tagName === "h2") return <h2 key={key} {...elementProps}>{children}</h2>;
+  if (tagName === "h3") return <h3 key={key} {...elementProps}>{children}</h3>;
+  if (tagName === "h4") return <h4 key={key} {...elementProps}>{children}</h4>;
+  if (tagName === "p") return <div key={key} className={joinClassNames("richParagraph", className)} style={style}>{children}</div>;
+  if (tagName === "ul") return <ul key={key} {...elementProps}>{children}</ul>;
+  if (tagName === "ol") return <ol key={key} {...elementProps}>{children}</ol>;
+  if (tagName === "li") return <li key={key} {...elementProps}>{children}</li>;
+  if (tagName === "blockquote") return <blockquote key={key} {...elementProps}>{children}</blockquote>;
+  if (tagName === "pre") return <pre key={key} {...elementProps}>{children}</pre>;
+  if (tagName === "code") return <code key={key} {...elementProps}>{children}</code>;
+  if (tagName === "figure") return <figure key={key} {...elementProps}>{children}</figure>;
+  if (tagName === "figcaption") return <figcaption key={key} {...elementProps}>{children}</figcaption>;
+  if (tagName === "strong" || tagName === "b") return <strong key={key} {...elementProps}>{children}</strong>;
+  if (tagName === "em" || tagName === "i") return <em key={key} {...elementProps}>{children}</em>;
+  if (tagName === "span") return <span key={key} {...elementProps}>{children}</span>;
+  if (tagName === "table") return <table key={key} {...elementProps}>{children}</table>;
+  if (tagName === "thead") return <thead key={key} {...elementProps}>{children}</thead>;
+  if (tagName === "tbody") return <tbody key={key} {...elementProps}>{children}</tbody>;
+  if (tagName === "tr") return <tr key={key} {...elementProps}>{children}</tr>;
+  if (tagName === "th") return <th key={key} {...elementProps}>{children}</th>;
+  if (tagName === "td") return <td key={key} {...elementProps}>{children}</td>;
+
+  return children.length > 0 ? <div key={key} {...elementProps}>{children}</div> : null;
+}
+
+function stripHtmlForFallback(html: string): string {
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function styleAttributeToProperties(styleAttribute: string | null): CSSProperties | undefined {
+  if (!styleAttribute?.trim()) return undefined;
+
+  const properties: Record<string, string> = {};
+  for (const declaration of styleAttribute.split(";")) {
+    const separatorIndex = declaration.indexOf(":");
+    if (separatorIndex === -1) continue;
+
+    const rawName = declaration.slice(0, separatorIndex).trim();
+    const value = declaration.slice(separatorIndex + 1).trim();
+    if (!rawName || !value) continue;
+
+    const propertyName = rawName.startsWith("--") ? rawName : rawName.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    properties[propertyName] = value;
+  }
+
+  return Object.keys(properties).length > 0 ? (properties as CSSProperties) : undefined;
+}
+
+function joinClassNames(...classNames: Array<string | undefined>): string | undefined {
+  const cleaned = classNames.filter(Boolean);
+  return cleaned.length > 0 ? cleaned.join(" ") : undefined;
 }
 
 function InlineMarkdown({ content }: { content: string }) {
@@ -2492,7 +3252,7 @@ function InlineMarkdown({ content }: { content: string }) {
         components={{
           p: ({ children }) => <span>{children}</span>,
           a: ({ children, ...props }) => (
-            <a {...props} target="_blank" rel="noreferrer">
+            <a {...props} draggable={false} target="_blank" rel="noreferrer">
               {children}
             </a>
           )
@@ -2529,7 +3289,7 @@ function MarkdownBlock({ content }: { content: string }) {
         rehypePlugins={[rehypeKatex]}
         components={{
           a: ({ children, ...props }) => (
-            <a {...props} target="_blank" rel="noreferrer">
+            <a {...props} draggable={false} target="_blank" rel="noreferrer">
               {children}
             </a>
           )

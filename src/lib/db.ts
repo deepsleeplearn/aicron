@@ -308,13 +308,14 @@ export function upsertItem(input: {
       ON CONFLICT(item_id) DO UPDATE SET
         content = CASE
           WHEN excluded.content IS NULL THEN item_content.content
+          WHEN ? = 1 THEN excluded.content
           WHEN item_content.content IS NULL THEN excluded.content
           WHEN length(excluded.content) > length(item_content.content) THEN excluded.content
           ELSE item_content.content
         END,
         fetched_at = CURRENT_TIMESTAMP
     `
-  ).run(itemId, input.content ?? null);
+  ).run(itemId, input.content ?? null, shouldReplaceStoredContent(input.source) ? 1 : 0);
 
   db.prepare(
     `
@@ -328,6 +329,10 @@ export function upsertItem(input: {
         generated_at = CURRENT_TIMESTAMP
     `
   ).run(itemId, input.summary, input.whyItMatters, input.action);
+}
+
+function shouldReplaceStoredContent(source: Source): boolean {
+  return source.type === "twitter-user-posts" || source.type === "codex-radar";
 }
 
 export function removeSourceItemsExcept(sourceId: string, canonicalUrls: string[]) {

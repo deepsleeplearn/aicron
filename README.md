@@ -4,9 +4,7 @@
 
 **Local-first AI information radar**
 
-Scheduled briefing workspace for AI labs, research papers, expert X feeds, GitHub trends, CodexRadar, and local Codex reading.
-
-`30 min sync` · `local only` · `Codex assistant` · `source adapters` · `tool radar`
+A quiet workspace for tracking fast-moving AI work and turning it into focused local reading.
 
 </div>
 

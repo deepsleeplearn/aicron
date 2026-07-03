@@ -1,0 +1,122 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AICron GitHub poster</title>
+  <desc id="desc">A local-first AI briefing workspace with scheduled source refreshes, expert feeds, research papers, tool radar, and a Codex reading assistant.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F6F9FC"/>
+      <stop offset="0.48" stop-color="#EDF5F8"/>
+      <stop offset="1" stop-color="#F8F6EF"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="418" y1="86" x2="1132" y2="558" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F8FBFD"/>
+    </linearGradient>
+    <linearGradient id="rail" x1="442" y1="114" x2="442" y2="529" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#122336"/>
+      <stop offset="1" stop-color="#1B3A40"/>
+    </linearGradient>
+    <linearGradient id="radar" x1="782" y1="166" x2="1004" y2="452" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EFF9F5"/>
+      <stop offset="1" stop-color="#F9F4E8"/>
+    </linearGradient>
+    <filter id="softShadow" x="-40" y="-40" width="1360" height="720" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#1F3144" flood-opacity="0.14"/>
+    </filter>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" stroke="#DCE7EC" stroke-width="1" opacity="0.55"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="640" rx="36" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1280" height="640" rx="36" fill="url(#grid)" opacity="0.45"/>
+
+  <g transform="translate(86 94)">
+    <rect x="0" y="0" width="74" height="74" rx="22" fill="#132A3A"/>
+    <circle cx="37" cy="37" r="23" stroke="#6AD6B7" stroke-width="3"/>
+    <path d="M37 15v44M15 37h44" stroke="#E8F3F0" stroke-width="3" stroke-linecap="round"/>
+    <path d="M24 24l26 26" stroke="#F4B556" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <text x="86" y="219" fill="#132233" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="72" font-weight="800" letter-spacing="-1.5">AICron</text>
+  <text x="88" y="264" fill="#2C465A" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="25" font-weight="650">Local-first AI information radar</text>
+  <text x="88" y="307" fill="#52687A" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18">
+    <tspan x="88" dy="0">Scheduled briefing workspace for AI labs, papers,</tspan>
+    <tspan x="88" dy="30">expert X feeds, GitHub trends, and CodexRadar.</tspan>
+  </text>
+
+  <g transform="translate(88 390)" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+    <rect x="0" y="0" width="122" height="38" rx="19" fill="#E9F7F2" stroke="#B9DFD1"/>
+    <circle cx="20" cy="19" r="5" fill="#2CA67A"/>
+    <text x="34" y="25" fill="#23473C" font-size="14" font-weight="700">30 min sync</text>
+    <rect x="136" y="0" width="120" height="38" rx="19" fill="#EEF4FF" stroke="#C7D9F6"/>
+    <circle cx="156" cy="19" r="5" fill="#3B73D9"/>
+    <text x="170" y="25" fill="#263D67" font-size="14" font-weight="700">local only</text>
+    <rect x="270" y="0" width="132" height="38" rx="19" fill="#FFF5E4" stroke="#EBCF99"/>
+    <circle cx="290" cy="19" r="5" fill="#C9822A"/>
+    <text x="304" y="25" fill="#654514" font-size="14" font-weight="700">Codex chat</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="418" y="78" width="770" height="482" rx="28" fill="url(#screen)" stroke="#DBE6EA"/>
+    <rect x="442" y="114" width="142" height="415" rx="18" fill="url(#rail)"/>
+    <text x="464" y="152" fill="#E9F4F2" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="800">AICron</text>
+    <g fill="#DDEAE7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" font-weight="650">
+      <text x="464" y="198">Plaza</text>
+      <text x="464" y="230">Developers</text>
+      <text x="464" y="262">Coder</text>
+      <text x="464" y="294">Papers</text>
+      <text x="464" y="326">Experts</text>
+      <text x="464" y="358">Tools</text>
+    </g>
+    <rect x="462" y="374" width="90" height="24" rx="12" fill="#264F55"/>
+    <text x="477" y="391" fill="#9CE2CA" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" font-weight="800">CodexRadar</text>
+
+    <rect x="612" y="114" width="314" height="415" rx="18" fill="#FFFFFF" stroke="#E1E9ED"/>
+    <text x="634" y="153" fill="#162638" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="22" font-weight="800">Today briefing</text>
+    <text x="634" y="181" fill="#6B7D8C" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13">Newest leaf items across every source</text>
+
+    <g>
+      <rect x="634" y="215" width="266" height="68" rx="14" fill="#F7FAFC" stroke="#E3EAEE"/>
+      <rect x="652" y="234" width="58" height="10" rx="5" fill="#6AD6B7"/>
+      <rect x="652" y="255" width="202" height="8" rx="4" fill="#CBD8DE"/>
+      <rect x="652" y="270" width="126" height="8" rx="4" fill="#E1E8EC"/>
+      <circle cx="872" cy="249" r="12" fill="#EEF7F4" stroke="#9DD9C5"/>
+    </g>
+    <g>
+      <rect x="634" y="303" width="266" height="68" rx="14" fill="#F8FAFF" stroke="#E3EAEE"/>
+      <rect x="652" y="322" width="78" height="10" rx="5" fill="#4E81D9"/>
+      <rect x="652" y="343" width="208" height="8" rx="4" fill="#CBD8DE"/>
+      <rect x="652" y="358" width="146" height="8" rx="4" fill="#E1E8EC"/>
+      <circle cx="872" cy="337" r="12" fill="#F0F5FF" stroke="#B5C9F2"/>
+    </g>
+    <g>
+      <rect x="634" y="391" width="266" height="68" rx="14" fill="#FFFBF3" stroke="#E8DED0"/>
+      <rect x="652" y="410" width="68" height="10" rx="5" fill="#F2B25A"/>
+      <rect x="652" y="431" width="196" height="8" rx="4" fill="#D7D4C9"/>
+      <rect x="652" y="446" width="118" height="8" rx="4" fill="#E8E3D8"/>
+      <circle cx="872" cy="425" r="12" fill="#FFF6E8" stroke="#EBCF99"/>
+    </g>
+
+    <rect x="954" y="114" width="202" height="415" rx="18" fill="#FBFDFD" stroke="#E1E9ED"/>
+    <text x="976" y="153" fill="#162638" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="800">Codex notes</text>
+    <text x="976" y="181" fill="#6B7D8C" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12">Discuss selected articles locally</text>
+
+    <rect x="976" y="214" width="158" height="92" rx="16" fill="url(#radar)" stroke="#DCE9E3"/>
+    <circle cx="1055" cy="260" r="32" fill="none" stroke="#CBE7DC" stroke-width="2"/>
+    <circle cx="1055" cy="260" r="18" fill="none" stroke="#F1D59B" stroke-width="2"/>
+    <path d="M1055 260l45-24" stroke="#2CA67A" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="1100" cy="236" r="5" fill="#2CA67A"/>
+
+    <rect x="976" y="334" width="158" height="18" rx="9" fill="#DCEFE8"/>
+    <rect x="976" y="366" width="118" height="18" rx="9" fill="#E8EFF9"/>
+    <rect x="976" y="398" width="140" height="18" rx="9" fill="#F6E8CF"/>
+    <rect x="976" y="462" width="158" height="36" rx="18" fill="#122336"/>
+    <text x="1002" y="485" fill="#E7F5F0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="800">read with Codex</text>
+  </g>
+
+  <g opacity="0.78">
+    <path d="M116 520C197 482 265 492 334 526" stroke="#8EDCC8" stroke-width="3" stroke-linecap="round"/>
+    <path d="M94 548C192 496 294 510 386 558" stroke="#F2B25A" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="410" cy="569" r="5" fill="#F2B25A"/>
+  </g>
+</svg>

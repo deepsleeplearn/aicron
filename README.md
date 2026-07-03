@@ -1,8 +1,10 @@
+<p align="center">
+  <img src="docs/assets/github-poster.svg" alt="AICron - local-first AI information radar" width="100%" />
+</p>
+
 # AICron
 
-AI Information Cron.
-
-Local-first technical briefing workspace for OpenAI, Codex, Anthropic, Claude Platform, Claude Code, and service status updates.
+AI Information Cron: a local-first technical briefing workspace for AI labs, Codex, Claude Code, research papers, expert X feeds, GitHub trends, and tool radar updates.
 
 ## Product Requirements
 

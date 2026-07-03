@@ -1,8 +1,14 @@
-<p align="center">
-  <img src="docs/assets/github-poster.svg" alt="AICron - local-first AI information radar" width="100%" />
-</p>
+<div align="center">
 
 # AICron
+
+**Local-first AI information radar**
+
+Scheduled briefing workspace for AI labs, research papers, expert X feeds, GitHub trends, CodexRadar, and local Codex reading.
+
+`30 min sync` · `local only` · `Codex assistant` · `source adapters` · `tool radar`
+
+</div>
 
 AI Information Cron: a local-first technical briefing workspace for AI labs, Codex, Claude Code, research papers, expert X feeds, GitHub trends, and tool radar updates.
 
